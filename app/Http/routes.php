@@ -1,15 +1,17 @@
 <?php
-get('/', function () {
+Route::get('/', function () {
     return view('welcome');
 });
 
-get('test1', function () {
-    $posts = \App\Models\Student::where('StHalaqah',215)->with('latestDaily')->get()->toArray();
-    dd($posts);
-});
+Route::get('daily', ['as' => 'daily.daily', 'uses' => 'DailyController@index']);
 
-get('test2', ['as' => 'test2', 'uses' => 'DailyController@test2']);
-get('test3', ['as' => 'test3', 'uses' => 'DailyController@test3']);
-get('st/daily', ['as' => 'st.daily', 'uses' => 'DailyController@index']);
+Route::get('dailym', ['as' => 'daily.dailym', 'uses' => 'DailyController@indexm']);
 
-get('st/allJson/{h_date?}/{StHalaqah?}', ['as' => 'st.allJson', 'uses' => 'DailyController@allJson']);
+Route::get('daily/allJson/{h_date}/{StHalaqah}', ['as' => 'daily.allJson', 'uses' => 'DailyController@allJson']);
+
+Route::post('daily/prepareForHalakah', ['as' => 'daily.prepareForHalakah', 'uses' => 'DailyController@prepareForHalakah']);
+
+Route::post('memorize/store/', ['as' => 'memorize.store', 'uses' => 'MemorizeController@store']);
+Route::put('memorize/update/', ['as' => 'memorize.update', 'uses' => 'MemorizeController@update']);
+Route::DELETE('memorize/destroy/{memorize_id}', ['as' => 'memorize.destroy', 'uses' => 'MemorizeController@destroy']);
+Route::get('memorize/getMemorizeData/{h_date}/{memorizeTypeID}/{studentID}', ['as' => 'memorize.getMemorizeData', 'uses' => 'MemorizeController@getMemorizeData']);

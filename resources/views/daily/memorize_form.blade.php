@@ -1,119 +1,110 @@
-<?php
-$buttonLabel = 'حفظ التعديلات';
-$formType = 'edit1';
-function formGroupOpen($label)
-{
-    $sm = 3;
-    $xs = 5;
+<div id="modal1" class="modal {{--modal-fixed-footer--}}">
+    <div class="modal-content">
+        <i class="title-font mid-size-font">@{{ selectedStudentInfo.stFullName3 }} [ @{{ singleMemorizeData(CurrentMemorizeTypeID).name }} ]</i>
 
-    return "<div class='form-group'>
-    <label class='control-label col-sm-{$sm} col-xs-{$xs}'>" . $label . "</label>
-    <div class='col-sm-" . (12 - $sm) . " col-xs-" . (12 - $xs) . "'>";
-}
+        <div class="divider"></div>
+        <form>
 
-$formGroupClose = "</div></div>";
-?>
-<div class="modal fade" id="memorize_model" tabindex="-1" role="dialog" aria-labelledby="memorize-modelLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div bind-class="'modal-' + modelClass()" class="modal-content modal-md">
-            <form method='post' class='form-horizontal' role='form' id='demo-form' data-parsley-validate>
+            <input type='hidden' name='form1' value='form1'>
+            <input v-model="newMemorize.daily_id" type='hidden' required>
+            <input v-model="newMemorize.memorize_type" type='hidden' required>
 
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="memorize-modelLabel">@{{ selectedStudentInfo.stFullName4 }} - (@{{ singleMemorizeData(CurrentMemorizeTypeID).name }})</h4>
-                </div>
+            {{--<div class="section">--}}
+            <div class="row mini-margin-bottom">
+                <label class="col s5 m2 left-align horizontal-label" for="start_sora">من سورة</label>
+                <select class="col s7 m10 browser-default" v-model="newMemorize.start_sora" number v-on:change="getAyatCount()" name='start_sora' id='start_sora'>
+                    <option v-for="sora in quran" value="@{{ sora.n }}">@{{sora.t}}</option>
+                </select>
+            </div>
 
-                <div class="modal-body">
-                    <div class='col-md-12'>
-                        <input type='hidden' name='form1' value='form1'>
-                        <input v-model="newMemorize.daily_id" type='hidden' required>
-                        <input v-model="newMemorize.memorize_type" type='hidden' required>
+            <div class="row mini-margin-bottom">
+                <label class="col s5 m2 left-align horizontal-label" for="start_aya">من آية</label>
+                <select v-model="newMemorize.start_aya" number class="col s7 m10 browser-default" name='start_aya' id='start_aya'>
+                    <option v-for="aya in sora1AyatArray" value="@{{ aya.value }}">@{{aya.text}}</option>
+                </select>
+            </div>
+            {{--</div>--}}
 
-                        {!! formGroupOpen('من سورة') !!}
-                        <select v-model="newMemorize.start_sora" number on-change="getAyatCount()" class='form-control' name='start_sora' id='start_sora'>
-                            <option v-for="sora in quran" bind-value="sora.n">@{{sora.t}}</option>
-                        </select>
-                        {{--<select v-model="newMemorize.start_sora" on-change="getAyatCount()" options="quranIdAndName" number class='form-control' name='start_sora' id='start_sora'>--}}
-                        {{--</select>--}}
-                        {!! $formGroupClose !!}
+            <div class="row mini-margin-bottom">
+                <label class="col s5 m2 left-align horizontal-label" for="end_sora">إلى سورة</label>
+                <select v-model="newMemorize.end_sora" number v-on:change="getAyatCount()" class="col s7 m10 browser-default" name='end_sora' id='end_sora'>
+                    <option v-for="sora in quran" value="@{{ sora.n }}">@{{sora.t}}</option>
+                </select>
+            </div>
 
-                        {!! formGroupOpen('من آية') !!}
-                        <select v-model="newMemorize.start_aya" number class='form-control' name='start_aya' id='start_aya'>
-                            <option v-for="aya in sora1AyatArray" bind-value="aya.value">@{{aya.text}}</option>
-                        </select>
-                        {{--<select v-model="newMemorize.start_aya" options="sora1AyatArray" number class='form-control' name='start_aya' id='start_aya' > </select>--}}
-                        {!! $formGroupClose !!}
+            <div class="row mini-margin-bottom">
+                <label class="col s5 m2 left-align horizontal-label" for="end_aya">إلى آية</label>
+                <select v-model="newMemorize.end_aya" class="col s7 m10 browser-default" number name='end_aya' id='end_aya'>
+                    <option v-for="aya in sora2AyatArray" value="@{{ aya.value }}">@{{aya.text}}</option>
+                </select>
+            </div>
 
-                        {!! formGroupOpen('إلى سورة') !!}
-                        <select v-model="newMemorize.end_sora" number on-change="getAyatCount()" class='form-control' name='end_sora' id='end_sora'>
-                            <option v-for="sora in quran" bind-value="sora.n">@{{sora.t}}</option>
-                        </select>
-                        {{--<select v-model="newMemorize.end_sora" on-change="getAyatCount()" options="quranIdAndName" number class='form-control' name='end_sora' id='end_sora' > </select>--}}
-                        {!! $formGroupClose !!}
 
-                        {!! formGroupOpen('إلى آية') !!}
-                        <select v-model="newMemorize.end_aya" number class='form-control' name='end_aya' id='end_aya'>
-                            <option v-for="aya in sora2AyatArray" bind-value="aya.value">@{{aya.text}}</option>
-                        </select>
-                        {{--<select v-model="newMemorize.end_aya" options="sora2AyatArray" number class='form-control' name='end_aya' id='end_aya' > </select>--}}
-                        {!! $formGroupClose !!}
+            <div class="row mini-margin-bottom">
+                <label class="col s5 m2 left-align horizontal-label" for="errors_count">عدد الأخطاء</label>
+                <select v-model="newMemorize.errors_count" class="col s7 m10 browser-default" number name='errors_count' id='errors_count'>
+                    <option v-for="error in errorsMaxCount" value="@{{ error.value }}">@{{error.text}}</option>
+                </select>
+            </div>
 
-                        {!! formGroupOpen('عدد الأخطاء') !!}
-                        <select v-model="newMemorize.errors_count" number class='form-control' name='errors_count' id='errors_count'>
-                            <option v-for="error in errorsMaxCount" bind-value="error.value">@{{error.text}}</option>
-                        </select>
-                        {{--<select v-model="newMemorize.errors_count" options="errorsMaxCount" number class='form-control' name='errors_count' id='errors_count'> </select>--}}
-                        {!! $formGroupClose !!}
+            <div class="row mini-margin-bottom">
+                <label class="col s5 m2 left-align horizontal-label" for="hesitations_count">عدد الترددات</label>
+                <select v-model="newMemorize.hesitations_count" class="col s7 m10 browser-default" number name='hesitations_count' id='hesitations_count'>
+                    <option v-for="error in errorsMaxCount" value="@{{ error.value }}">@{{error.text}}</option>
+                </select>
+            </div>
 
-                        {!! formGroupOpen('عدد الترددات') !!}
-                        <select v-model="newMemorize.hesitations_count" number class='form-control' name='hesitations_count' id='hesitations_count'>
-                            <option v-for="error in errorsMaxCount" bind-value="error.value">@{{error.text}}</option>
-                        </select>
-                        {{--<select v-model="newMemorize.hesitations_count" options="errorsMaxCount" number class='form-control' name='hesitations_count' id='hesitations_count'> </select>--}}
-                        {!! $formGroupClose !!}
 
-                        {!! formGroupOpen('النقاط') !!}
-                        <h4>@{{newMemorize.points}}</h4>
-                        <input v-model="newMemorize.points" number type='hidden' class='form-control' name='points' id='points' placeholder='النقاط'>
-                        {!! $formGroupClose !!}
+            <div class="row mini-margin-bottom">
+                <label class="col s5 m2 left-align horizontal-label" for="points">النقاط</label>
+                <h6 class="col s7 m10">@{{newMemorize.points}}</h6>
+                <input v-model="newMemorize.points" number type='hidden' name='points' id='points' placeholder='النقاط'>
+            </div>
 
-                        {!! formGroupOpen('ملاحظات') !!}
-                        <input v-model="newMemorize.notes" type='text' class='form-control' name='notes' id='notes' placeholder='ملاحظات'>
-                        {!! $formGroupClose !!}
+            {{--<div class="row mini-margin-bottom">--}}
+            {{--<input v-model="newMemorize.notes" type='text' class="col s7 m10 browser-default" name='notes' id='notes' placeholder='ملاحظات'>--}}
+            {{--<label class="col s5 m2 left-align horizontal-label" for="notes">ملاحظات</label>--}}
+            {{--</div>--}}
+            <div class="row mini-margin-bottom">
+                <label>
+                    <input v-model="newMemorize.notes" type="text" class="col s7 m10 offset-s2 offset-m2" name="notes" placeholder="ملاحظات">
+                </label>
+            </div>
+            <div class="row mini-margin-bottom">
 
-                        {!! formGroupOpen('') !!}
-                        <label class='checkbox-inline'>
-                            <input v-model="newMemorize.is_not_memorized" type='checkbox' number name='is_not_memorized' id='is_not_memorized' value="1">&nbsp;&nbsp; لم يحفظ
-                        </label>
-                        {!! $formGroupClose !!}
-
-                        <div class="row">
-                            <div class="modal-footer">
-                                <div class='col-xs-6 col-sm-4 pull-left'>
-                                    <button type='submit' class='btn btn-primary btn-block'>حفظ</button>
-                                </div>
-                                <div v-if="newMemorize.id>0" class='col-xs-4 col-sm-3 pull-left'>
-                                    {{--<h5><a class='text-danger' href='st_memorize_delete.php?id=@{{ newMemorize.id }}'> <i class='fa fa-trash'></i> حذف </a> </h5>--}}
-                                    <h5><a class='text-danger' bind-href="'st_memorize_delete.php?id=' + newMemorize.id"> <i class='fa fa-trash'></i> حذف </a> </h5>
-                                </div>
-                                <div class='col-xs-1 col-sm-2'>
-                                    <h4><a href="" class="pull-right" data-dismiss="modal">X</a></h4>
-                                </div>
-                            </div>
-                            {{--<h2>new</h2>--}}
-                                <pre style="direction: ltr">
-                                    @{{ student }}
-{{--                                    @{{ newMemorize | json 4 }}--}}
-                                {{--</pre>--}}
-                            {{--<h2>previous</h2>--}}
-                                {{--<pre style="direction: ltr">--}}
-{{--                                    @{{ previousMemorize | json 4 }}--}}
-                                </pre>
-                        </div>
+            </div>
+            {{--<div class="row mini-margin-bottom">--}}
+            <div class="modal-footer">
+                {{--<div class="divider"></div>--}}
+                <div class="row mini-margin-bottom">
+                    <div class="col s7 m10 offset-s2 offset-m2 md-size-font">
+                        <input v-model="newMemorize.is_not_memorized" type="checkbox" name="is_not_memorized" id="is_not_memorized">
+                        <label class="" for="is_not_memorized">لم يحفظ</label>
                     </div>
                 </div>
-            </form>
+                <div class="row">
+                    <a href="#" class="col m2 s3 modal-action modal-close right-align"><i class="material-icons small-1">close</i></a>
 
-        </div>
+                    <div class="col s4 m3">
+                        <a href="#" v-on:click="storeMemorize()" class="btn {{--modal-action modal-close --}}waves-effect">حفظ</a>
+                    </div>
+                    <h5 v-if="newMemorize.id>0" class='col s4 m3'>
+                        <a v-on:click="destroyMemorize()" class='title-font red-text text-lighten-2 tooltipped' href="#" data-position="top" data-tooltip="حذف بيانات الحفظ الحالية"> <i class="material-icons">delete</i></a>
+                    </h5>
+
+                </div>
+            </div>
+            {{--<pre style="direction: ltr">--}}
+            {{--@{{ newMemorize | json 4 }}--}}
+            {{--</pre>--}}
+        </form>
+
     </div>
 </div>
+{{--
+<script>
+    $('select[id=start_sora]').on('change', function () {
+        content.newMemorize.start_sora = $(this).val();
+        content.getAyatCount();
+    });
+</script>--}}

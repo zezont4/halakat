@@ -13,9 +13,9 @@ var elixir = require('laravel-elixir');
 
 elixir(function (mix) {
     mix.styles([
-            "bootstrap.min.css",
-            "bootstrap-rtl.min.css",
-            "font-awesome.min.css",
+            "materialize.css",
+            "materialize-rtl.css",
+            "Material_Icons.css",
             "droidarabicnaskh.css",
             "ge_ss_two_light.css",
             "zezo_date.css"
@@ -23,14 +23,16 @@ elixir(function (mix) {
     );
 
     mix.scripts([
-            "jquery.1.11.1.min.js",
-            "bootstrap.min.js",
+            "jquery-1.11.3.min.js",
+            "materialize.min.js",
             "zezo_1_get_selected_year.js",
             "zezo_2_date_functions.js",
             "zezo_3_h_calender.js",
+            "quran.js",
             "vue.js",
             "vue-resource.min.js",
-            "quran.js"
+            "my-js.js",
+            "daily.js"
         ], 'public/js/main.js'
     );
 });

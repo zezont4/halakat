@@ -1,48 +1,57 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
     <link rel="shortcut icon" type="image/ico" href="{{asset('favicon.ico')}}"/>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $pageTitle }}</title>
 
+    <meta id="token" value="{{ csrf_token() }}">
+
+    <title>{{ $pageTitle }}</title>
     <link rel="stylesheet" href="{{asset('css/main.css')}}">
+{{--    <link rel="stylesheet" href="{{asset('css/materialize-rtl.css')}}">--}}
     <link rel="stylesheet" href="{{asset('css/style.css')}}">
 
-    <script src="{{asset('js/main.js')}}"></script>
-    <script>
-        Vue.config.debug = true;
-    </script>
+    {{--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">--}}
 
-
-    <!--[if lt IE 9]>
-    <script src="{{asset('js/html5shiv.min.js')}}"></script>
-    <script src="{{asset('js/respond.min.js')}}"></script>
-    <![endif]-->
+    {{--<script src="{{asset('js/main.js')}}"></script>--}}
+    {{--<script src="http://materializecss.com/js/init.js"></script>--}}
 
     @yield('header')
 
 </head>
 <body>
+<nav class="blue-grey lighten-2" role="navigation">
+    <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo"><img width="146" height="60" class="logo" src="{{ asset('image/techcloud_white.png') }}"></a>
+        <ul class="left hide-on-med-and-down">
+            <li><a href="#">Navbar Link</a></li>
+        </ul>
+
+        <ul id="nav-mobile" class="side-nav">
+            <li><a href="#">Navbar Link</a></li>
+        </ul>
+        <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+    </div>
+</nav>
+
 <div class="container">
     {{--@include('layouts.menu')--}}
-    <div class="container-fluid">
-        <legend class="text-primary"><h3>{{$pageTitle}}</h3></legend>
-        @include('layouts.messages')
-        @yield('content')
-    </div>
+    {{--<legend class="text-primary"><h3>{{$pageTitle}}</h3></legend>--}}
+
+    {{--@include('layouts.messages')--}}
+    @yield('content')
 </div>
 
 
+<script src="{{asset('js/main.js')}}"></script>
 @yield('footer')
-{{--<script type="text/javascript">
-    $(function () {
-        $("input[type='radio']:checked").parent(".btn").addClass('active');
-        $("input[type='checkbox']:checked").parent(".btn").addClass('active');
-        $('[data-toggle="tooltip"]').tooltip()
+<script>
+    $(document).ready(function () {
+//        $('select').material_select();
+//        $('.tooltipped').tooltip({delay: 50});
+//        $('.modal-trigger').leanModal();
     });
-</script>--}}
+</script>
 </body>
 
 </html>

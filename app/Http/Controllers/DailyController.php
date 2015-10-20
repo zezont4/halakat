@@ -1,105 +1,95 @@
 <?php namespace App\Http\Controllers;
 
 use App\Http\Requests;
+use App\Http\Requests\DailyRequest;
 use App\Models\BehaviorOpt;
 use App\Models\Daily;
 use App\Models\MemorizeType;
 use App\Models\Method;
 use App\Models\Student;
-use Illuminate\Support\Facades\DB;
+
+class DailyController extends Controller
+{
+
+    public function index()
+    {
+        return view('daily.indexjs');
+    }
+
+    public function indexm()
+    {
+        return view('daily.indexm');
+    }
+
+    public function prepareForHalakah(DailyRequest $request)
+    {
+        $students = Student::where('StHalaqah', $request->StHalaqah)->get();
+
+        $student_ids = array_map(function ($c) {
+            return $c['st_no'];
+        }, $students->toArray());
+        $daily = null;
+        for ($i = 0; $i < count($student_ids); $i++) {
+            $previousExistence = Daily::where('st_id', $student_ids[$i])->where('h_date', $request->h_date)->first();;
+            if (!$previousExistence) {
+                $daily = Daily::create([
+                    'st_id'  => $student_ids[$i],
+                    'h_date' => $request->h_date,
+                    'status' => 1,
+                ]);
+            }
+        }
+        if ($daily) {
+            return 'تم تجهيز اليوم بنجاح';
+        }
+
+    }
+
+    public function allJson($h_date, $StHalaqah)
+    {
+
+        $memorizeTypes = MemorizeType::where('is_active', 1)->orderBy('order')->get();
+
+        $methods = Method::with('memorizeType')->get();
+
+        $allBehaviors = BehaviorOpt::get();
+
+        $students = Student::inHalakah($StHalaqah)->get();
+
+        $student_ids = array_map(function ($c) {
+            return $c['st_no'];
+        }, $students->toArray());
 
 
-class DailyController extends Controller {
+        foreach ($students as $student) {
+            $dailies = Daily::
+            where('st_id', $student->st_no)->lastTwoDays($h_date)
+                ->with('behavior')
+                ->with('memorize')
+                ->orderby('h_date', 'desc')
+                ->get();
 
-	public function test3()
-	{
-		$h_date = '14361210';
-		$StHalaqah = 215;
-		DB::enableQueryLog();
+            $student->daily = $dailies->toArray();
+        }
 
-		$students = Student::inHalakah($StHalaqah)->get();
 
-		foreach ($students as $student) {
-			$dailies = Daily::
-			where('st_id', $student->st_no)->lastTwoDays($h_date)
-				->with('behavior')
-				->with('memorize')
-				->orderby('h_date', 'desc')
-				->get();
+        $SelectedDayDaily = Daily::where('h_date', $h_date)->whereIn('st_id', $student_ids)->get();
 
-			$student->daily = $dailies->toArray();
-		}
+        $SelectedDayDaily = count($SelectedDayDaily) ? true : false;
+        return response()->json([
+            "students"         => $students,
+            "memorizeTypes"    => $memorizeTypes,
+            "SelectedDayDaily" => $SelectedDayDaily,
+            "selectedDate"     => $this->StringToDate($h_date),
+            "methods"          => $methods,
+            "allBehaviors"     => $allBehaviors
+        ]);
+    }
 
-		echo '<pre><code class="language-json">';
-		print_r($students->toArray());
-		echo '<hr>';
-//		print_r($daily);
-		echo '<hr>';
-		print_r(DB::getQueryLog());
-		echo '</code></pre>';
-	}
+    public function StringToDate($strDate)
+    {
+        $tm_Date = ($strDate != "") ? substr($strDate, 0, 4) . "/" . substr($strDate, 4, 2) . "/" . substr($strDate, 6, 2) : null;
 
-	public function test2()
-	{
-		DB::enableQueryLog();
-		$h_date = '14361209';
-		$StHalaqah = 215;
-		$students = Student::select(DB::raw('st_no,concat_ws(" ",StName1,StName2,StName3,StName4) as stFullName4,StBurthDate,FatherMobileNo'))
-			->where('StHalaqah', $StHalaqah)
-			->with(['latestDaily' => function ($query) use ($h_date) {
-				$query
-					->orWhere('h_date', $h_date)
-					->with('behavior')
-					->with('memorize')
-					->orderby('h_date', 'desc');
-			}])->get();
-		echo '<pre><code class="language-json">';
-		print_r(DB::getQueryLog());
-		print_r($students->toArray());
-		echo '</code></pre>';
-
-//		return;
-//		\App\Models\Student::where('StHalaqah',215)->with('latestDaily')->get()->toArray();
-	}
-
-	public function index()
-	{
-		return view('daily.indexjs');
-	}
-
-	public function allJson($h_date, $StHalaqah)
-	{
-		function StringToDate($strDate)
-		{
-			$tm_Date = ($strDate != "") ? substr($strDate, 0, 4) . "/" . substr($strDate, 4, 2) . "/" . substr($strDate, 6, 2) : null;
-
-			return $tm_Date;
-		}
-
-		$memorizeTypes = MemorizeType::where('is_active', 1)->orderBy('order')->get();
-
-		$methods = Method::with('memorizeType')->get();
-
-		$allBehaviors = BehaviorOpt::get();
-
-		$students = Student::select(DB::raw('st_no,concat_ws(" ",StName1,StName2,StName3,StName4) as stFullName4,StBurthDate,FatherMobileNo'))
-			->where('StHalaqah', $StHalaqah)
-			->with(['latestDaily' => function ($query) use ($h_date) {
-				$query
-					->orWhere('h_date', $h_date)
-					->with('behavior')
-					->with('memorize')
-					->orderby('h_date', 'desc');
-			}])->get();
-
-		return response()->json([
-			"students"      => $students,
-			"memorizeTypes" => $memorizeTypes,
-			"selectedDate"  => StringToDate($h_date),
-			"methods"       => $methods,
-			"allBehaviors"  => $allBehaviors
-		]);
-
-	}
-
+        return $tm_Date;
+    }
 }
