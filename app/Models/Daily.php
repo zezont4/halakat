@@ -32,7 +32,7 @@ class Daily extends Model
         $query->where(function ($query) use ($h_date) {
             $query->where('h_date', $h_date)
                 ->orWhere(function ($query) use ($h_date) {
-                    $query->Where('h_date', '<', $h_date)->Where('status', 1);
+                    $query->Where('h_date', '<', $h_date)->Where('attendance_status', 1);
                 });
         })->take(2);
     }

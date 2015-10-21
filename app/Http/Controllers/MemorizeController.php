@@ -13,6 +13,7 @@ class MemorizeController extends Controller
     {
         $memorize = Memorize::create($request->except('id', 'memorize_type'));
         if ($memorize) {
+//            return $memorize;
             return [
                 'data' => [
                     'id' => $memorize->id

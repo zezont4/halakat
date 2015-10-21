@@ -203,7 +203,7 @@
             </div>
         </div>
         <pre style="direction: ltr">
-{{--        @{{ allJson.students | json }}--}}
+{{--        @{{ summaries | json }}--}}
         </pre>
 
     </div>

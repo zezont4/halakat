@@ -23,7 +23,7 @@ var content = new Vue({
             var data = [];
             this.allJson.students.forEach(function (student) {
                 var selectedDailyData = this.singleDailyData(student, this.allJson.selectedDate);
-                var dailyId, dailyHDate, attendance_status,
+                var dailyId, dailyHDate, dailyStatus,
                     goodBehaviorsPoints, badBehaviorsPoints, totalBehaviors,
                     memorize1Points, memorize2Points, memorize3Points, totalMemorize,
                     memorize1Class, memorize2Class, memorize3Class,
@@ -33,7 +33,7 @@ var content = new Vue({
                     //Daily
                     dailyId = selectedDailyData.id;
                     dailyHDate = selectedDailyData.h_date;
-                    attendance_status = selectedDailyData.attendance_status;
+                    dailyStatus = selectedDailyData.status;
 
                     //Behaviors
                     goodBehaviorsPoints = parseFloat(this.studentBehaviorsPoints(student, 1)) || 0;
@@ -62,7 +62,7 @@ var content = new Vue({
                     FatherMobileNo: student.FatherMobileNo,
                     dailyId: dailyId || null,
                     dailyHDate: dailyHDate || null,
-                    attendance_status: attendance_status || null,
+                    dailyStatus: dailyStatus || null,
                     goodBehaviorsPoints: goodBehaviorsPoints ? parseFloat(goodBehaviorsPoints.toFixed(2)) : 0,
                     badBehaviorsPoints: badBehaviorsPoints ? parseFloat(badBehaviorsPoints.toFixed(2)) : 0,
 
@@ -82,12 +82,12 @@ var content = new Vue({
 
                 });
             }.bind(this));
+
             return data;
         }
     },
 
     methods: {
-
         degree: function (myClass) {
             switch (true) {
                 case (myClass == 'success'):
@@ -103,11 +103,14 @@ var content = new Vue({
 
         getDataFromDB: function () {
             this.summaries.splice(0);
+            //console.log(this.allJson.SelectedDayDaily);
             this.allJson.SelectedDayDaily = true;
+            //console.log(this.allJson.SelectedDayDaily);
             var rowDate = date_to_no(this.allJson.selectedDate);
             if (!rowDate) return false;
-            this.$http.get('daily/allJson/' + rowDate + '/215', function (data) {
+            this.$http.get('daily/allJson/' + rowDate + '/' + halakah.Hname, function (data) {
                 this.allJson = data;
+                //console.log(this.allJson.SelectedDayDaily);
             }.bind(this));
             setTimeout(reloadMaterializeDOM(), 2000);
         },
@@ -120,16 +123,16 @@ var content = new Vue({
                 points: null, notes: null, is_not_memorized: null, memorize_type: null
             };
             var selectedDailyData = this.singleDailyData(student, memorizeDate);
-
-
             if (!selectedDailyData.memorize) return memorize;
             selectedDailyData.memorize.forEach(function (st_memorize) {
-                if (memorizeTypeID == st_memorize.method_id) {
-                    memorize = st_memorize;
-                    memorize.daily_id = selectedDailyData.id;
-                    memorize.memorize_type = memorizeTypeID;
+                var methods = this.singleMethodData(st_memorize.method_id);
+                if (methods.memorize_type) {
+                    if (memorizeTypeID == methods.memorize_type.id) {
+                        memorize = st_memorize;
+                        memorize.daily_id = selectedDailyData.id;
+                        memorize.memorize_type = memorizeTypeID;
+                    }
                 }
-                //}
             }.bind(this));
             return memorize;
         },
@@ -148,12 +151,13 @@ var content = new Vue({
         openMemorizeForm: function (memorizeTypeID, studentID) {
             var student = this.findStudentById(studentID);
             this.CurrentMemorizeTypeID = memorizeTypeID;
+            //this.CurrentStudentID = studentID;
             this.selectedStudentInfo = {stFullName4: student.stFullName4, stFullName3: student.stFullName3, st_no: student.st_no};
             this.newMemorize = {};
             this.previousMemorize = {};
             this.newMemorize = this.extractSelectedMemorizeToArray(this.allJson.selectedDate, memorizeTypeID, student);
-
             student.daily.forEach(function (daily) {
+                //console.info(JSON.stringify(daily, null, "  "));
                 if (date_to_no(this.allJson.selectedDate) != daily.h_date) {
                     daily.memorize.forEach(function (memorize) {
                         if (memorizeTypeID == memorize.method_id) {
@@ -169,8 +173,7 @@ var content = new Vue({
             if (this.allJson.previousDate) {
                 this.previousMemorize = this.extractSelectedMemorizeToArray(this.allJson.previousDate, memorizeTypeID, student);
             }
-
-            if (!this.previousMemorize.id && !this.newMemorize.id) {
+            if (!this.previousMemorize.id) {
                 this.getPreviousMemorize(date_to_no(this.allJson.selectedDate), memorizeTypeID, student.st_no)
             } else {
                 this.prepareNewDayMemorization();
@@ -178,6 +181,7 @@ var content = new Vue({
 
             setTimeout(reloadMaterializeDOM, 1000);
             $('#modal1').openModal();
+
         },
 
         prepareNewDayMemorization: function () {
@@ -185,7 +189,8 @@ var content = new Vue({
             if (!this.newMemorize.id && this.previousMemorize.id) {
                 this.newMemorize.daily_id = this.CurrentDailyId;
                 if (!this.previousMemorize.is_not_memorized) {
-                    var $last_aya = this.previousMemorize.end_aya >= this.quran[this.previousMemorize.end_sora - 1].a;
+                    //console.log(this.previousMemorize.is_not_memorized);
+                    $last_aya = this.previousMemorize.end_aya >= this.quran[this.previousMemorize.end_sora - 1].a;
                     this.newMemorize.start_sora = $last_aya ? this.previousMemorize.end_sora + 1 : this.previousMemorize.end_sora;
                     this.newMemorize.start_aya = $last_aya ? 1 : this.previousMemorize.end_aya + 1;
 
@@ -202,6 +207,7 @@ var content = new Vue({
                 }
             }
             this.getAyatCount();
+            //console.info(JSON.stringify(this.previousMemorize, null, "  "));
         },
 
         getPreviousMemorize: function (h_date, memorizeTypeID, studentID) {
@@ -237,6 +243,17 @@ var content = new Vue({
                 return this.pointClass(this.newMemorize);
         },
 
+        singleMethodData: function (method_id) {
+            var selectedMethod = '';
+            this.allJson.methods.forEach(function (method) {
+                if (method_id == method.id) {
+                    selectedMethod = method;
+                    return false;
+                }
+            });
+            return selectedMethod;
+        },
+
         singleMemorizeData: function (memorizeTypeID) {
             var selectedMemorize = '';
             this.allJson.memorizeTypes.forEach(function (memorize) {
@@ -260,10 +277,11 @@ var content = new Vue({
         },
 
         pointClass: function (st_memorize) {
-            //console.log(st_memorize.method_id);
-            var a_point = this.singleMemorizeData(st_memorize.method_id).a_point;
-            //var a_point = 3;
+            var methods = this.singleMethodData(st_memorize.method_id);
+
+            var a_point = methods.memorize_type.a_point;
             var b_point = (a_point / 3) * 2;
+            //var c_point = (a_point / 3);
 
             var st_points = st_memorize.points;
             if (st_memorize.is_not_memorized == 0) {
@@ -314,9 +332,8 @@ var content = new Vue({
             var selectedDailyData = this.singleDailyData(student, this.allJson.selectedDate);
             if (selectedDailyData.memorize) {
                 selectedDailyData.memorize.forEach(function (st_memorize) {
-                    //var singleMethod = this.singleMethodData(st_memorize.method_id);
-                    //var selectedMemorizeData = this.singleMemorizeData(memorizeTypeID);
-                    if (memorizeTypeID == st_memorize.method_id) {
+                    var singleMethod = this.singleMethodData(st_memorize.method_id);
+                    if (memorizeTypeID == singleMethod.memorize_type_id) {
                         st_memorize.myClass = this.pointClass(st_memorize);
                         memorize = st_memorize;
                         return false;
@@ -384,10 +401,9 @@ var content = new Vue({
 
         storeMemorize: function () {
             this.prepareNewMemorizeBeforeSaving();
-            var a_point = this.singleMemorizeData(this.CurrentMemorizeTypeID).a_point;
             if (this.newMemorize.id) {
                 //Update memorization
-                this.newMemorize.points = a_point - this.newMemorize.errors_count;
+                this.newMemorize.points = 5 - this.newMemorize.errors_count;
                 this.$http.put('memorize/update/', this.newMemorize,
                     function (data) {
                         reactToAjaxSuccess(data);
@@ -400,7 +416,7 @@ var content = new Vue({
                 //create a new memorization
                 this.newMemorize.daily_id = this.CurrentDailyId;
                 this.newMemorize.method_id = this.CurrentMemorizeTypeID;
-                this.newMemorize.points = a_point - this.newMemorize.errors_count;
+                this.newMemorize.points = 5 - this.newMemorize.errors_count;
                 this.$http.post('memorize/store/', this.newMemorize,
                     function (data) {
                         reactToAjaxSuccess(data);
@@ -423,10 +439,12 @@ var content = new Vue({
                 .error(function (data, status, request) {
                     reactToAjaxError(data, status, request);
                 });
+            //this.makeAjaxRequest('memorize/destroy/' + this.newMemorize.id, null);
         },
 
         prepareNewDailyForHalakah: function () {
-            this.$http.post('daily/prepareForHalakah/', {'h_date': date_to_no(this.allJson.selectedDate), 'StHalaqah': 215},
+            //this.makeAjaxRequest('daily/prepareForHalakah/', {'h_date': date_to_no(this.allJson.selectedDate), 'StHalaqah': halakah.Hname});
+            this.$http.post('daily/prepareForHalakah/', {'h_date': date_to_no(this.allJson.selectedDate), 'StHalaqah': halakah.Hname},
                 function (data) {
                     reactToAjaxSuccess(data);
                     this.getDataFromDB();
@@ -437,7 +455,7 @@ var content = new Vue({
         },
 
         randomPhrase: function () {
-            return randomPhrase[Math.floor((Math.random() * randomPhrase.length - 1) + 1)];
+            return randomPhrase[Math.floor((Math.random() * randomPhrase.length-1) + 1)];
         }
 
 

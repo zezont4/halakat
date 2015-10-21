@@ -13,7 +13,12 @@ class Student extends Model
 
     public function daily()
     {
-        return $this->hasMany('App\Models\Daily', 'st_id', 'st_no');
+        return $this->hasMany(Daily::class, 'st_no', 'st_id');
+    }
+
+    public function halakah()
+    {
+        return $this->belongsTo(Halakat::class, 'StHalaqah', 'AutoNo');
     }
 
     public function getFullName4Attribute()

@@ -107,7 +107,8 @@ function getHijriDate(source_g_date) {
 }
 
 function date_to_no(formattedDate) {
-    if (!formattedDate || typeof (formattedDate) != 'string') {
+    if (!formattedDate) return;
+    if (typeof (formattedDate) != 'string') {
         console.log('تأكد من أن التاريخ المرسل أنه على شكل نصي');
         return;
     }

@@ -93,10 +93,10 @@ Vue.config.strict = true;
 var myData = {
     allJson: {
         students: [],
+        halakah:[],
         memorizeTypes: [],
         allBehaviors: [],
         SelectedDayDaily: true,
-        methods: [],
         selectedDate: null,
         previousDate: null
     },
