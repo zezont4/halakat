@@ -6,7 +6,7 @@
         <div id="blur" v-cloak>
             <div class="clearfix">
                 <div class="col col-xs-8 col-sm-3 static">
-                    <input v-model="allJson.selectedDate" type='text'
+                    <input v-model="selectedDate" type='text'
                            class='form-control' name='selectedDate' id='selectedDate' zezo_date="true">
                 </div>
                 <div class="col col-xs-4 col-sm-2">
@@ -71,7 +71,7 @@
                     <div class="row">
                         <div class="col-xs-4">
                             <div class="padding_l_r_mini">
-                                <button @click="openMemorizeForm(1,summary.st_no)" type="button"
+                                <button @click="openMemorizeModal(1,summary.st_no)" type="button"
                                 class="btn btn1 btn1-@{{ summary.memorize1Class  }} btn-block"
                                 data-toggle="modal" data-target="#memorize_model">
                                 <span>حفظ</span>
@@ -81,7 +81,7 @@
                         </div>
                         <div class="col-xs-4">
                             <div class="padding_l_r_mini">
-                                <button @click="openMemorizeForm(2,summary.st_no)" type="button"
+                                <button @click="openMemorizeModal(2,summary.st_no)" type="button"
                                 class="btn btn1 btn1-@{{ summary.memorize2Class }} btn-block"
                                 data-toggle="modal" data-target="#memorize_model">
                                 تثبيت
@@ -91,7 +91,7 @@
                         </div>
                         <div class="col-xs-4">
                             <div class="padding_l_r_mini">
-                                <button @click='openMemorizeForm(3,summary.st_no)' type='button' class='btn btn1 btn1-@{{ summary.memorize3Class }} btn-block'
+                                <button @click='openMemorizeModal(3,summary.st_no)' type='button' class='btn btn1 btn1-@{{ summary.memorize3Class }} btn-block'
                                 data-toggle='modal' data-target=''#memorize_model'> مراجعة <i
                                         v-if='summary.memorize3Points > 0'> &nbsp;&nbsp;@{{ summary.memorize3Points }}</i> </button>
                             </div>
@@ -132,7 +132,7 @@
     <script>
         $(document).ready(function () {
             $('#selectedDate').change(function () {
-                content.allJson.selectedDate = $('#selectedDate').val();
+                content.selectedDate = $('#selectedDate').val();
                 content.getDataFromDB();
             });
         });

@@ -31,7 +31,8 @@ elixir(function (mix) {
             "quran.js",
             "vue.js",
             "vue-resource.min.js",
-            "my-js.js",
+            "vue_data.js",
+            "vue_methods.js",
             "daily.js"
         ], 'public/js/main.js'
     );

@@ -2,97 +2,101 @@
 
 use App\Http\Requests;
 use App\Http\Requests\DailyRequest;
-use App\Models\BehaviorOpt;
+use App\Models\BehaviorTypes;
 use App\Models\Daily;
+use App\Models\Halakah;
 use App\Models\MemorizeType;
-use App\Models\Method;
+use App\Models\School;
 use App\Models\Student;
 use App\Models\Teacher;
+use Illuminate\Support\Facades\DB;
 
 
 class DailyController extends Controller
 {
-    function aprint($arr, $return = false) {
-        $wrap = '<div style=" white-space:pre; position:absolute; top:10px; left:10px; height:200px; width:100px; overflow:auto; z-index:5000;">';
-        $wrap = '<pre>';
-        $txt = preg_replace('/(\[.+\])\s+=>\s+Array\s+\(/msiU','$1 => Array (', print_r($arr,true));
-
-        if ($return) return  $wrap.$txt.'</pre>';
-        else echo $wrap.$txt.'</pre>';
+    function aprint($arr, $return = false)
+    {
+        $wrap = '<code style="white-space:pre;">';
+        $wrap .= '<pre style="background-color: #001100; color: #fff3e0;">';
+        $txt = preg_replace('/(\[.+\])\s+=>\s+Array\s+\(/msiU', '$1 => Array (', print_r($arr, true));
+        if ($return) return $wrap . $txt . '</pre></code>';
+        else echo $wrap . $txt . '</pre></code>';
     }
 
-    public function index()
+    public function allJson($h_date, $StHalaqah)
     {
-        $h_date = '14370108';
-        $StHalaqah = '26';
-        $teacher_no = 397;
-//        return view('daily.indexjs');
-        $FullTeacherData = Teacher::where('t_no', $teacher_no)->with('halakah')->first();
+        $studentsInDaily = Daily::where('halakah_id', $StHalaqah)->where('h_date',$h_date)->lists('st_id');
 
-        $memorizeTypes = MemorizeType::where('is_active', 1)->orderBy('order')->get();
+        $students = Student::whereIn('st_no', $studentsInDaily->toArray())
+            ->select(['st_no', 'StBurthDate', 'FatherMobileNo', DB::raw('st_no,
+         concat_ws(" ",StName1,StName2,StName4) as stFullName3,
+          concat_ws(" ",StName1,StName2,StName3,StName4) as stFullName4')])->get();
 
-        $methods = Method::with('memorizeType')->get();
-
-        $allBehaviors = BehaviorOpt::get();
-
-        $student_ids = array_map(function ($student) {
-            return $student['st_no'];
-        }, $FullTeacherData->halakah->students->toArray());
-
-        foreach ($FullTeacherData->halakah->students as $student) {
+        foreach ($students as $student) {
             $dailies = Daily::
             where('st_id', $student->st_no)->lastTwoDays($h_date)
-                ->with('behavior')
-                ->with('memorize')
+                ->with('daily_behavior')
+                ->with('daily_memorize')
                 ->orderby('h_date', 'desc')
                 ->get();
 
             $student->daily = $dailies->toArray();
         }
-        $FullTeacherData = $FullTeacherData->toArray();
+        $teacher = Teacher::where('THalaqah', $StHalaqah)->where('hide', 0)->get();
+        If (count($teacher) > 1) {
+            return 'المعلم يدرس في أكثر من حلقة. يجب حذف الحلقات الآخرى أو ربطها بمعلم آخر';
+        }
+        $teacher = $teacher[0];
 
-        $teacher = array_slice($FullTeacherData,0,count($FullTeacherData)-1);
-        $halakah = array_slice($FullTeacherData['halakah'],0,count($FullTeacherData['halakah'])-2);
-        $school = array_slice($FullTeacherData['halakah']['school'],0,count($FullTeacherData['halakah']['school']));
-        $SelectedDayDaily = Daily::where('h_date', $h_date)->whereIn('st_id', $student_ids)->get();
+        $halakah = Halakah::where('AutoNo', $StHalaqah)->first();
+
+        $school = School::where('id', $halakah->EdarahID)->first();
+
+        $SelectedDayDaily = Daily::where('h_date', $h_date)->whereIn('st_id', $studentsInDaily->toArray())->get();
 
         $SelectedDayDaily = count($SelectedDayDaily) ? true : false;
 
-//        print_r($teacher->halakah->students->toArray());
-        /*return response()->json([
-            "students"         => $teacher,
-            "selectedDate"     => $this->StringToDate($h_date),
-            "SelectedDayDaily" => $SelectedDayDaily,
-            "memorizeTypes"    => $memorizeTypes,
-            "methods"          => $methods,
-            "allBehaviors"     => $allBehaviors
-        ]);*/
+//        $this->aprint($teacher->toArray());
+//        $this->aprint($halakah->toArray());
+//        $this->aprint($school->toArray());
+//        $this->aprint($students->toArray());
 
-        return( json_encode([
-            "teacher"         => $teacher,
-            "halakah"         => $halakah,
-            "school"         => $school,
-            "students"         => $FullTeacherData['halakah']['students'],
-            "selectedDate"     => $this->StringToDate($h_date),
-            "SelectedDayDaily" => $SelectedDayDaily,
-            "memorizeTypes"    => $memorizeTypes,
-            "methods"          => $methods,
-            "allBehaviors"     => $allBehaviors
-        ],JSON_UNESCAPED_UNICODE));
+        return (json_encode([
+            "teacher"          => $teacher->toArray(),
+            "halakah"          => $halakah->toArray(),
+            "school"           => $school->toArray(),
+            "students"         => $students->toArray(),
+            "SelectedDayDaily" => $SelectedDayDaily
+        ], JSON_UNESCAPED_UNICODE));
     }
 
-    public function indexm()
+    public function memorize_and_behavior_types()
     {
-//        $halakat = Halakat::where('AutoNo','215')->with('students')->get();
-//        $halakat = Student::where('StHalaqah','215')->with('halakah')->get();
-//        dd($halakat->toArray());
-        return view('daily.indexm');
+        $memorize_types = MemorizeType::where('is_active', 1)->orderBy('order')->get();
+
+        $behaviorTypes = BehaviorTypes::get();
+
+        return (json_encode([
+            "memorize_types" => $memorize_types,
+            "behavior_types" => $behaviorTypes
+        ], JSON_UNESCAPED_UNICODE));
+    }
+
+    public function index()
+    {
+        return view('daily.index');
     }
 
     public function prepareForHalakah(DailyRequest $request)
     {
         $students = Student::where('StHalaqah', $request->StHalaqah)->get();
 
+        $teacher = Teacher::where('THalaqah', $request->StHalaqah)->where('hide', 0)->get();
+
+//        return $teacher[0]['StHalaqah'];
+        If (count($teacher) > 1) {
+            return 'المعلم يدرس في أكثر من حلقة. يجب حذف الحلقات الآخرى أو ربطها بمعلم آخر';
+        }
         $student_ids = array_map(function ($c) {
             return $c['st_no'];
         }, $students->toArray());
@@ -103,6 +107,9 @@ class DailyController extends Controller
                 $daily = Daily::create([
                     'st_id'             => $student_ids[$i],
                     'h_date'            => $request->h_date,
+                    'edarah_id'         => $teacher[0]->TEdarah,
+                    'halakah_id'        => $teacher[0]->THalaqah,
+                    'teacher_id'        => $teacher[0]->t_no,
                     'attendance_status' => 1,
                 ]);
             }
@@ -113,14 +120,14 @@ class DailyController extends Controller
 
     }
 
-    public function allJson($h_date, $StHalaqah)
+    public function allJson1($h_date, $StHalaqah)
     {
 
-        $memorizeTypes = MemorizeType::where('is_active', 1)->orderBy('order')->get();
+        $memorize_types = MemorizeType::where('is_active', 1)->orderBy('order')->get();
 
 //        $methods = Method::with('memorizeType')->get();
 
-        $allBehaviors = BehaviorOpt::get();
+        $allBehaviors = BehaviorTypes::get();
 
         $students = Student::inHalakah($StHalaqah)->get();
 
@@ -132,8 +139,8 @@ class DailyController extends Controller
         foreach ($students as $student) {
             $dailies = Daily::
             where('st_id', $student->st_no)->lastTwoDays($h_date)
-                ->with('behavior')
-                ->with('memorize')
+                ->with('daily_behavior')
+                ->with('daily_memorize')
                 ->orderby('h_date', 'desc')
                 ->get();
 
@@ -146,10 +153,10 @@ class DailyController extends Controller
         $SelectedDayDaily = count($SelectedDayDaily) ? true : false;
         return response()->json([
             "students"         => $students,
-            "memorizeTypes"    => $memorizeTypes,
+            "memorize_types"   => $memorize_types,
             "SelectedDayDaily" => $SelectedDayDaily,
             "selectedDate"     => $this->StringToDate($h_date),
-            "allBehaviors"     => $allBehaviors
+            "behavior_types"   => $allBehaviors
         ]);
     }
 

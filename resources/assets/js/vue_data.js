@@ -21,6 +21,16 @@ randomPhrase = [
 
 ];
 
+function getDataFromObject(source) {
+    var tmp_arr = {};
+    for (var key in source) {
+        if (source.hasOwnProperty(key)) {
+            tmp_arr[key] = source[key];
+        }
+    }
+    return tmp_arr;
+}
+
 function reloadMaterializeDOM() {
     $('.material-tooltip').remove();
     $('.tooltipped').tooltip('remove');
@@ -35,19 +45,23 @@ function reactToAjaxSuccess(data) {
     } else if (typeof data == 'string') {
         myAlert(data);
     }
-    $('#modal1').closeModal();
+
 }
 
-function reactToAjaxError(data, status, request) {
-    if (status == 422) {
-        myAlert(firstJsonError(data), 'error');
+function reactToAjaxError(data, status, request, response) {
+    if (status == 422) {//أخطاء التخقق من الحقول
+        myAlert('[ ' + status + ' ] ' + firstJsonError(data), 'error');
+    } else if (status == 403) {// عدم وجود صلاحية ان عدم وجود Token
+        myAlert('[ ' + status + ' ] ' + firstJsonError(data), 'error');
     } else if (status == 0) {
         myAlert('عفوا.. انقطع الإتصال بالإنترنت', 'error')
     } else {
-        //console.log('request : ' + request);
-        //console.log('status : ' + status);
-        myAlert('[ ' + status + ' ] ' + 'عفوا.. حدث خطأ', 'error')
+        myAlert('[ ' + status + ' ] ' + 'عفوا.. حدث خطأ', 'error');
     }
+    console.log('request : ' + request);
+    console.log('status : ' + status);
+    console.log('data : ' + data);
+    console.log('data : ' + JSON.stringify(data));
 }
 function firstJsonError(obj) {
     for (var a in obj) return obj[a];
@@ -56,11 +70,11 @@ function firstJsonError(obj) {
 function myAlert(msg, type, duration) {
     var msgType = type ? type : 'success';
     var typeColorArray = {
-        'success': 'green lighten-1 title-font',
-        'error': 'red lighten-2 title-font',
-        'info': 'blue lighten-1 title-font'
+        'success': 'green lighten-1',
+        'error': 'red lighten-2',
+        'info': 'blue lighten-1'
     };
-    duration = duration ? duration : 4000;
+    duration = duration ? duration : 5000;
     Materialize.toast(msg, duration, typeColorArray[msgType])
 }
 
@@ -79,31 +93,33 @@ function myAlert(msg, type, duration) {
 //        })
 //}
 
-Vue.transition('stagger', {
-    stagger: function (index) {
-        // increase delay by 50ms for each transitioned item,
-        // but limit max delay to 300ms
-        return Math.min(300, index * 50)
-    }
-})
 Vue.http.headers.common['X-CSRF-TOKEN'] = document.querySelector('#token').getAttribute('value');
 Vue.http.options.root = '';
 Vue.config.debug = true;
-Vue.config.strict = true;
-var myData = {
-    allJson: {
-        students: [],
-        halakah:[],
-        memorizeTypes: [],
-        allBehaviors: [],
-        SelectedDayDaily: true,
-        selectedDate: null,
-        previousDate: null
-    },
+Vue.config.strict = false;
+var $vue_data = {
+    showNoResultFoundMsg: false,
+    //allJson: {
+    students: [],
+    halakah: [],
+    teacher: [],
+    school: [],
+    memorize_types: [],
+    behavior_types: [],
+    selectedStudentBehaviors: [],
+    selectedBehavior: [],
+    new_daily_behavior: {},
+    old_daily_behavior: {},
+    studentTotalBehaviors: 0,
+    SelectedDayDaily: true,
+    selectedDate: null,
+    previousDate: null,
+    //},
     CurrentMemorizeTypeID: null,
     //CurrentStudentID: null,
     CurrentDailyId: null,
     newMemorize: {},
+    old_memorize: {},
     previousMemorize: {},
     selectedStudentInfo: {},
     ajaxRespondData: null,
@@ -137,6 +153,9 @@ var myData = {
     quranCharCount: quranCharCount,
     //ajaxMsg: null,
     //showAjaxMsg: false
-    randomPhrases: randomPhrase
+    randomPhrases: randomPhrase,
+    msg_ok: false,
+    msg_title: null,
+    msg_body: null
 };
 

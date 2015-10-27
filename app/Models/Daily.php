@@ -17,14 +17,14 @@ class Daily extends Model
         return $this->belongsTo('App\Models\Student', 'st_no', 'st_id');
     }
 
-    public function memorize()
+    public function daily_memorize()
     {
-        return $this->hasMany('App\Models\Memorize', 'daily_id', 'id');
+        return $this->hasMany('App\Models\DailyMemorize', 'daily_id', 'id');
     }
 
-    public function behavior()
+    public function daily_behavior()
     {
-        return $this->hasMany('App\Models\Behavior', 'daily_id', 'id');
+        return $this->hasMany('App\Models\DailyBehavior', 'daily_id', 'id');
     }
 
     public function scopeLastTwoDays($query, $h_date)

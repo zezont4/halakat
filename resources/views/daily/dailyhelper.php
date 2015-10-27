@@ -12,7 +12,7 @@ function getMemorizeBlocks($student, $memorize_type, $countMemorizeTypes)
 
     if (count($student->daily)) {
         foreach ($student->daily[0]->memorize as $st_memorize) {
-            if ($memorize_type->id == $st_memorize->memorize_type) {
+            if ($memorize_type->id == $st_memorize->memorize_type_id) {
                 $class = $st_memorize->PointClassAttrib;
                 $st_points = $st_memorize->points;
             }

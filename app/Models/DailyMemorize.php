@@ -2,25 +2,25 @@
 
 use Illuminate\Database\Eloquent\Model;
 
-class Memorize extends Model
+class DailyMemorize extends Model
 {
 
-    protected $table = 'st_memorize_daily';
+    protected $table = 'st_daily_memorize';
     public $timestamps = false;
 
-    protected $fillable = ['daily_id', 'method_id', 'start_sora', 'start_aya', 'end_sora', 'end_aya', 'errors_count', 'hesitations_count', 'points', 'notes', 'is_not_memorized'];
+    protected $fillable = ['daily_id', 'memorize_type_id', 'start_sora', 'start_aya', 'end_sora', 'end_aya', 'errors_count', 'hesitations_count', 'points', 'notes', 'is_not_memorized'];
 
-    protected $casts = [
-        'daily_id'          => 'integer',
-        'method_id'         => 'integer',
-        'start_sora'        => 'integer',
-        'start_aya'         => 'integer',
-        'end_sora'          => 'integer',
-        'end_aya'           => 'integer',
-        'errors_count'      => 'integer',
-        'hesitations_count' => 'integer',
-        'points'            => 'integer'
-    ];
+//    protected $casts = [
+//        'daily_id'          => 'integer',
+//        'memorize_type_id'         => 'integer',
+//        'start_sora'        => 'integer',
+//        'start_aya'         => 'integer',
+//        'end_sora'          => 'integer',
+//        'end_aya'           => 'integer',
+//        'errors_count'      => 'integer',
+//        'hesitations_count' => 'integer',
+//        'points'            => 'float'
+//    ];
 
 //	protected $guarded = ['id'];
 
@@ -31,28 +31,29 @@ class Memorize extends Model
 
     public function method()
     {
-        return $this->belongsTo('App\Models\Method', 'method_id', 'id');
+        return $this->belongsTo('App\Models\Method', 'memorize_type_id', 'id');
     }
 
 
     public function setErrorsCountAttribute($value)
     {
         if (!$value) {
-            $this->attributes['errors_count'] = 0;
+            return $this->attributes['errors_count'] = 0;
         }
     }
 
     public function setIsNotMemorizedAttribute($value)
     {
         if (!$value) {
-            $this->attributes['is_not_memorized'] = 0;
+            return $this->attributes['is_not_memorized'] = 0;
         }
+        $this->attributes['is_not_memorized'] = 1;
     }
 
     public function setHesitationsCountAttribute($value)
     {
         if (!$value) {
-            $this->attributes['hesitations_count'] = 0;
+            return $this->attributes['hesitations_count'] = 0;
         }
     }
 
@@ -61,7 +62,7 @@ class Memorize extends Model
 
         $pointClass = '';
         $st_points = $this->attributes['points'];
-        $st_memorize_type = $this->attributes['memorize_type'];
+        $st_memorize_type = $this->attributes['memorize_type_id'];
 
         $memorize_types = MemorizeType::findOrFail($st_memorize_type);
 

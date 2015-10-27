@@ -3,15 +3,22 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+//Route::get('daily', ['as' => 'daily.daily', 'uses' => 'DailyController@index']);
+
 Route::get('daily', ['as' => 'daily.daily', 'uses' => 'DailyController@index']);
 
-Route::get('dailym', ['as' => 'daily.dailym', 'uses' => 'DailyController@indexm']);
-
 Route::get('daily/allJson/{h_date}/{StHalaqah}', ['as' => 'daily.allJson', 'uses' => 'DailyController@allJson']);
+Route::get('daily/memorize_and_behavior_types', ['as' => 'daily.memorize_and_behavior_types', 'uses' => 'DailyController@memorize_and_behavior_types']);
 
 Route::post('daily/prepareForHalakah', ['as' => 'daily.prepareForHalakah', 'uses' => 'DailyController@prepareForHalakah']);
 
-Route::post('memorize/store/', ['as' => 'memorize.store', 'uses' => 'MemorizeController@store']);
-Route::put('memorize/update/', ['as' => 'memorize.update', 'uses' => 'MemorizeController@update']);
-Route::DELETE('memorize/destroy/{memorize_id}', ['as' => 'memorize.destroy', 'uses' => 'MemorizeController@destroy']);
-Route::get('memorize/getMemorizeData/{h_date}/{memorizeTypeID}/{studentID}', ['as' => 'memorize.getMemorizeData', 'uses' => 'MemorizeController@getMemorizeData']);
+//daily_memorize
+Route::post('daily_memorize/store/', ['as' => 'daily_memorize.store', 'uses' => 'DailyMemorizeController@store']);
+Route::put('daily_memorize/update/', ['as' => 'daily_memorize.update', 'uses' => 'DailyMemorizeController@update']);
+Route::DELETE('daily_memorize/destroy/{memorize_id}', ['as' => 'daily_memorize.destroy', 'uses' => 'DailyMemorizeController@destroy']);
+Route::get('daily_memorize/getMemorizeData/{h_date}/{memorizeTypeID}/{studentID}', ['as' => 'daily_memorize.getMemorizeData', 'uses' => 'DailyMemorizeController@getMemorizeData']);
+
+//daily_behavior
+Route::post('daily_behavior/store/', ['as' => 'daily_behavior.store', 'uses' => 'DailyBehaviorController@store']);
+Route::put('daily_behavior/update/', ['as' => 'daily_behavior.update', 'uses' => 'DailyBehaviorController@update']);
+Route::DELETE('daily_behavior/destroy/{behavior_id}', ['as' => 'daily_behavior.destroy', 'uses' => 'DailyBehaviorController@destroy']);

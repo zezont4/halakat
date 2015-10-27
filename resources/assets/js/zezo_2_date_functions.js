@@ -8,24 +8,24 @@ function rawToFormattedDate(rawDate) {
 }
 
 function addDays(rawDate, daysCount) {
-    var sourcDate = new Date(rawToFormattedDate(rawDate));
-    sourcDate.setDate(sourcDate.getDate() + daysCount);
-    var year = sourcDate.getFullYear();
-    var month = ((parseInt(sourcDate.getMonth() + 1, 10) < 10) ? ('0' + (parseInt(sourcDate.getMonth() + 1, 10))) : (parseInt(sourcDate.getMonth(), 10) + 1));
-    var day = (sourcDate.getDate() < 10) ? ('0' + sourcDate.getDate()) : sourcDate.getDate();
-    var d_day_no = sourcDate.getDay();
+    var sourceDate = new Date(rawToFormattedDate(rawDate));
+    sourceDate.setDate(sourceDate.getDate() + daysCount);
+    var year = sourceDate.getFullYear();
+    var month = ((parseInt(sourceDate.getMonth() + 1, 10) < 10) ? ('0' + (parseInt(sourceDate.getMonth() + 1, 10))) : (parseInt(sourceDate.getMonth(), 10) + 1));
+    var day = (sourceDate.getDate() < 10) ? ('0' + sourceDate.getDate()) : sourceDate.getDate();
+    var d_day_no = sourceDate.getDay();
     return [String(year), String(month), String(day), d_day_no];
 }
 
-function getGregorianDate(rawHijriDate, only_day_no) {
+function getGregorianDate(rawHijriDate) {
     var selectedYearArray = getGregorianYearArray(rawHijriDate.substr(0, 4));
     var selectedMonth = parseInt(rawHijriDate.substr(4, 2), 10);
     var selectedDays = parseInt(rawHijriDate.substr(6, 2), 10);
     var totalDays = 0;
-    for (var i in selectedMonth) {
-        totalDays = selectedYearArray[i + 1] == 1 ? totalDays += 30 : totalDays + 29;
+    for (var i = 1; i < selectedMonth; i++) {
+        totalDays = selectedYearArray[i] == 1 ? totalDays += 30 : totalDays + 29;
     }
-    dateData = addDays(selectedYearArray[0], (totalDays + selectedDays - 1));
+    var dateData = addDays(selectedYearArray[0], (totalDays + selectedDays - 1));
     var dayNo = dateData[3];
     var rawDate = dateData[0] + dateData[1] + dateData[2];
     return {
@@ -81,7 +81,7 @@ function calculate_hijri_days(hijri_array) {
     var h_day = 0;
     for (var i = 2; i < 14; i++) {
         h_day = (g_date_diff + 1) - total_h_days;
-        total_h_days = (hijri_array[i] == 1) ? total_h_days += 30 :  total_h_days += 29;
+        total_h_days = (hijri_array[i] == 1) ? total_h_days += 30 : total_h_days += 29;
         if (total_h_days > g_date_diff) {
             h_month = i - 1;
             break;

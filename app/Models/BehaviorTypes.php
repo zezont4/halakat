@@ -2,9 +2,9 @@
 
 use Illuminate\Database\Eloquent\Model;
 
-class BehaviorOpt extends Model
+class BehaviorTypes extends Model
 {
-    protected $table = 'st_behaviors_opt';
+    protected $table = 'st_behaviors_types';
     public $timestamps = false;
     protected $guarded = ['id'];
 

@@ -11,6 +11,10 @@ button:focus {
     background-color: rgba(61, 255, 236, 0);
 }
 
+th {
+    font-family: 'GESSTwoLight-Light', sans-serif;;
+}
+
 .badge1-right {
     float: right;
     padding-right: 5px;
@@ -37,12 +41,13 @@ button:focus {
 
 .md-size-font {
     font-size: 1.1rem;
-    font-family: 'GESSTwoLight-Light';
+    font-family: 'GESSTwoLight-Light', sans-serif;
 }
 
 .checkbox-label {
-    top: -7px;
+    top: -8px;
     position: relative;
+    padding-right: 3px;
 }
 
 /* End of Materialize extra*/
@@ -120,7 +125,7 @@ span.number {
 }
 
 a {
-    color: #339ACC;
+    /* color: #339ACC; */
 }
 
 .btn1-success {
@@ -230,9 +235,11 @@ a {
     max-height: 90%;
     overflow: hidden;
 }
+
 .modal .modal-content {
     /* overflow: hidden; */
 }
+
 @media only screen and (max-width: 992px) {
     .modal {
         width: 90%;
@@ -247,6 +254,11 @@ a {
     .remove-margin-right-left {
         margin-left: -0.15rem;
         margin-right: -0.15rem;
+    }
+
+    #toast-container .toast {
+        font-size: 18px;
+        font-family: "Droid Arabic Naskh", sans-serif;
     }
 }
 
@@ -289,7 +301,7 @@ button, button i {
     font-style: normal;
 }
 
-label.horizontal-label {
+.horizontal-label {
     font-size: 1.1rem;
     font-family: 'GESSTwoLight-Light';
     line-height: 2.5rem;
@@ -317,6 +329,7 @@ a.btn {
 .mid-size-font {
     font-size: 1.1rem;
 }
+
 i.small-1 {
     font-size: 3rem;
 }
@@ -337,8 +350,29 @@ nav .brand-logo img.logo {
     background-color: #eee;
     overflow: hidden;
 }
+
 .expand-enter, .expand-leave {
     height: 0;
     padding: 0 10px;
     opacity: 0;
+}
+
+.text-success {
+    color: #4CAF50;
+}
+
+.text-info {
+    color: #2980b9;
+}
+
+.text-warning {
+    color: #D4860A;
+}
+
+.text-danger {
+    color: #e57373;
+}
+.btn-large {
+    font-size: 24px;
+    padding: 10px 20px;
 }

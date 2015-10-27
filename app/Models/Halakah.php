@@ -16,6 +16,11 @@ class Halakah extends Model
         return $this->hasMany(Student::class, 'StHalaqah', 'AutoNo');
     }
 
+    public function daily()
+    {
+        return $this->hasMany(Daily::class, 'StHalaqah', 'AutoNo');
+    }
+
     public function students()
     {
         return $this->onlyStudents()
