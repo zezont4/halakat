@@ -64,29 +64,29 @@
 
             <div class="row mini-margin-bottom">
                 <label class="col s5 m3 l2 left-align horizontal-label" for="points">النقاط</label>
-                <h6 class="col s7 m9 l10">@{{newMemorize.points}}</h6>
+                <h6 class="col s7 m9 l10text-@{{ newMemorize.my_class }}">@{{newMemorize.points}}  ( @{{degree(newMemorize.my_class) }} )</h6>
                 <input v-model="newMemorize.points" number type='hidden' name='points' id='points' placeholder='النقاط'>
             </div>
 
             <div class="row mini-margin-bottom">
-                <label class="col s5 m3 l2 left-align horizontal-label" for="points">التقدير</label>
+                {{--<label class="col s5 m3 l2 left-align horizontal-label" for="points">التقدير</label>--}}
 
-                <div class="col">
-                    <h5 class="mid-size-font text-@{{ newMemorize.my_class }}">@{{degree(newMemorize.my_class) }}</h5>
+                {{--<div class="col">--}}
+                    {{--<h5 class="mid-size-font text-@{{ newMemorize.my_class }}">@{{degree(newMemorize.my_class) }}</h5>--}}
                     {{--<input v-model="newMemorize.is_not_memorized" type="checkbox" name="is_not_memorized" id="is_not_memorized" disabled="disabled">--}}
                     {{--<label v-bind:class="{'red-text' : newMemorize.is_not_memorized}"  for="is_not_memorized">لم يحفظ</label>--}}
-                </div>
+                {{--</div>--}}
 
-                <div class="row mini-margin-bottom">
-                    <label class="col s12 m9 l10 offset-m1">
-                        <input v-model="newMemorize.notes" type="text" name="notes" placeholder="ملاحظات">
-                    </label>
-                </div>
+                {{--<div class="row mini-margin-bottom">--}}
+                    {{--<label class="col s12 m9 l10 offset-m1">--}}
+                        {{--<input v-model="newMemorize.notes" type="text" name="notes" placeholder="ملاحظات">--}}
+                    {{--</label>--}}
+                {{--</div>--}}
 
                 <div v-if="!newMemorize.id" class="col offset-s2 md-size-font">
                     <input v-model="newMemorize.applyToAllStudents" type="checkbox" name="applyToAllStudents" id="applyToAllStudents">
                     <label v-bind:class="{'red-text' : newMemorize.applyToAllStudents}"
-                           class="" for="applyToAllStudents">تطبيق الـ [ @{{ singleMemorizeData(CurrentMemorizeTypeID).name }} ] على جميع طلاب الحلقة</label>
+                           class="" for="applyToAllStudents">تطبيق الـ [ @{{ singleMemorizeData(CurrentMemorizeTypeID).name }} ] على الجميع</label>
 
                 </div>
 

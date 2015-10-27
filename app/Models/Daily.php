@@ -1,12 +1,12 @@
 <?php namespace App\Models;
 
-use App\Traits\LimitNestedTable;
+//use App\Traits\LimitNestedTable;
 use Illuminate\Database\Eloquent\Model;
 
 class Daily extends Model
 {
 
-    use LimitNestedTable;
+//    use LimitNestedTable;
     protected $table = 'st_daily';
 //    public $timestamps = false;
     protected $guarded = ['id'];

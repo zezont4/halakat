@@ -1,3 +1,6 @@
+#AddHandler php55 .php .htm
+#Action php55 /cgi-bin/php55.cgi
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews
