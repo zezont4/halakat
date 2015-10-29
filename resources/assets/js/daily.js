@@ -10,31 +10,31 @@ var content = new Vue({
         multiFilter: function (summaries) {
             var result = summaries.filter(function (summaries) {
                 switch (true) {
-                    case (this.searchType === 'name'):
+                    case (this.search_type === 'name'):
                         if (!this.search) return summaries;
                         return summaries.stFullName4.search(this.search) >= 0;
-                    case (this.searchType === 'points'):
+                    case (this.search_type === 'points'):
                         if (!this.search) return summaries;
                         return summaries.finalPoints >= this.search;
-                    case (this.searchType === 'degree'):
-                        if (!this.degreeType) return summaries;
-                        return summaries.memorize1Class.search(this.degreeType) >= 0
-                            || summaries.memorize2Class.search(this.degreeType) >= 0
-                            || summaries.memorize3Class.search(this.degreeType) >= 0;
+                    case (this.search_type === 'mark'):
+                        if (!this.mark_type) return summaries;
+                        return summaries.memorize1Class.search(this.mark_type) >= 0
+                            || summaries.memorize2Class.search(this.mark_type) >= 0
+                            || summaries.memorize3Class.search(this.mark_type) >= 0;
                 }
             }.bind(this));
             if (result.length) {
-                this.showNoResultFoundMsg = false;
+                this.show_no_result_found_msg = false;
                 return result;
             }
-            this.showNoResultFoundMsg = true;
+            this.show_no_result_found_msg = true;
         }
     },
     ready: function () {
         //alert('sdf');
         /*var g_date = '20150620'; console.log('Selected Gregorian date : ' + g_date); var todayHijriDateArray = zezo_get_hijri_date(g_date); this.todayHijriDate = todayHijriDateArray; console.log('Converted from g to (H array) : ' + this.days.todayHijriDate); for (var i = 0; i < 5; i++) { var rowTodayHijriDate = get_row_hijri_date(todayHijriDateArray); console.log('converted from (H array) to (H row) : ' + rowTodayHijriDate); var g_date = get_g_date(rowTodayHijriDate); console.log('convert (H row) to (G row) : ' + g_date); var day_no = get_g_date(rowTodayHijriDate, 'yes'); console.log('get day No from H date : ' + day_no); var addDays = add_days(g_date, -7); console.log('Add days to (G date) : ' + addDays); }*/
         this.getAllStudentsData();
-        this.getMemorizeAndBehaviorTypes();
+        this.getBasicData();
         this.fillSoraAndAyahList();
     },
 
@@ -42,18 +42,19 @@ var content = new Vue({
         summaries: function () {
             var data = [];
             this.students.forEach(function (student, i) {
-                var selectedDailyData = this.singleDailyData(student, this.selectedDate);
+                //var student_daily = this.findDailyByDate(student, this.selected_date);
+                var student_daily = _.findWhere(student.daily,{h_date:date_to_no(this.selected_date)})||{};
                 var dailyId, dailyHDate, attendance_status,
                     goodBehaviorsPoints, badBehaviorsPoints, totalBehaviors,
                     memorize1Points, memorize2Points, memorize3Points, totalMemorize,
                     memorize1Class, memorize2Class, memorize3Class,
                     finalPoints;
-                if (selectedDailyData.id) {
+                if (student_daily.id) {
 
                     //Daily
-                    dailyId = selectedDailyData.id;
-                    dailyHDate = selectedDailyData.h_date;
-                    attendance_status = selectedDailyData.attendance_status;
+                    dailyId = student_daily.id;
+                    dailyHDate = student_daily.h_date;
+                    attendance_status = student_daily.attendance_status;
 
                     //Behaviors
                     goodBehaviorsPoints = parseFloat(this.studentBehaviorsPoints(student, 1)) || 0;

@@ -1,10 +1,10 @@
 <div v-cloak id="modal_behavior_store" class="modal">
     <div class="modal-content">
-        <h5 class="title-font mid-size-font center-align">@{{ selectedStudentInfo.stFullName3 }} [ سلوك ومواظبة ]</h5>
+        <h5 class="title-font mid-size-font center-align">@{{ selected_student_info.stFullName3 }} [ سلوك ومواظبة ]</h5>
 
         {{--<div class="divider"></div>--}}
 
-        {{--<div v-if="selectedStudentBehaviors.length">--}}
+        {{--<div v-if="selected_student_behaviors.length">--}}
         {{--</div>--}}
         <form action="#">
 
@@ -25,7 +25,7 @@
             <div class="row mini-margin-bottom">
                 <label class="col s5 m2 left-align horizontal-label" for="behavior_id">السلوك</label>
                 <select class="col s7 m10 browser-default" v-model="new_daily_behavior.behavior_id" number
-                        v-on:change="new_daily_behavior.points = singleBehaviorData(new_daily_behavior.behavior_id).points" name='behavior_id' id='behavior_id'>
+                        v-on:change="new_daily_behavior.points = findBehavior(new_daily_behavior.behavior_id).points" name='behavior_id' id='behavior_id'>
                     <option value="" disabled selected>اختر السلوك</option>
                     <option v-for="behavior in behavior_types | filterBy new_daily_behavior.behavior_type in 'behavior_type'"
                             value="@{{ behavior.id }}">@{{behavior.name}}</option>
@@ -50,8 +50,8 @@
         <div class="modal-footer">
             <a href="#" v-on:click="storeBehavior()" class="btn-flat green-text lighten-2 waves-effect">حفظ</a>
 
-            <a v-if="new_daily_behavior.id" v-on:click="destroyBehavior()"
-               class='btn-flat red-text text-lighten-2 waves-effect waves-red' href="#">حذف</a>
+  {{--          <a v-if="new_daily_behavior.id" v-on:click="destroyBehavior()"
+               class='btn-flat red-text text-lighten-2 waves-effect waves-red' href="#">حذف</a>--}}
 
             <a href="#" class="btn-flat waves-effect modal-action modal-close" v-on:click="this.$setWithoutBind('new_daily_behavior',this.old_daily_behavior);">ألغاء الأمر</a>
         </div>

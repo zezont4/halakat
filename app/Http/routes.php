@@ -8,7 +8,7 @@ Route::get('/', function () {
 Route::get('daily', ['as' => 'daily.daily', 'uses' => 'DailyController@index']);
 
 Route::get('daily/allJson/{h_date}/{StHalaqah}', ['as' => 'daily.allJson', 'uses' => 'DailyController@allJson']);
-Route::get('daily/memorize_and_behavior_types', ['as' => 'daily.memorize_and_behavior_types', 'uses' => 'DailyController@memorize_and_behavior_types']);
+Route::get('daily/basic_data', ['as' => 'daily.basic_data', 'uses' => 'DailyController@basic_data']);
 
 Route::post('daily/prepareForHalakah', ['as' => 'daily.prepareForHalakah', 'uses' => 'DailyController@prepareForHalakah']);
 

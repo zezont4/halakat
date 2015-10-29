@@ -456,7 +456,7 @@ var quran = [
         t: "الناس",
         a: 6
     }];
-var quranCharCount = [
+var quran_char_count = [
     {
         s: 1,
         a: 1,

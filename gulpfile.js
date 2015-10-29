@@ -29,6 +29,7 @@ elixir(function (mix) {
             "zezo_2_date_functions.js",
             "zezo_3_h_calender.js",
             "quran.js",
+            "underscore-min.js",
             "vue.js",
             "vue-resource.min.js",
             "vue_data.js",

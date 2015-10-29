@@ -4,8 +4,10 @@ use App\Http\Requests;
 use App\Http\Requests\DailyRequest;
 use App\Models\BehaviorTypes;
 use App\Models\Daily;
+use App\Models\DailyMemorize;
 use App\Models\Halakah;
 use App\Models\MemorizeType;
+use App\Models\MinimumMemorize;
 use App\Models\School;
 use App\Models\Student;
 use App\Models\Teacher;
@@ -25,13 +27,20 @@ class DailyController extends Controller
 
     public function allJson($h_date, $StHalaqah)
     {
-        $studentsInDaily = Daily::where('halakah_id', $StHalaqah)->where('h_date',$h_date)->lists('st_id');
+        $studentsInDaily = Daily::where('halakah_id', $StHalaqah)->where('h_date', $h_date)->lists('st_id');
 
         $students = Student::whereIn('st_no', $studentsInDaily->toArray())
             ->select(['st_no', 'StBurthDate', 'FatherMobileNo', DB::raw('st_no,
          concat_ws(" ",StName1,StName2,StName4) as stFullName3,
           concat_ws(" ",StName1,StName2,StName3,StName4) as stFullName4')])->get();
 
+        $daily_memorize = DailyMemorize::get();
+        /*$query->where(function ($query) use ($h_date) {
+            $query->where('h_date', $h_date)
+                ->orWhere(function ($query) use ($h_date) {
+                    $query->Where('h_date', '<', $h_date)->Where('attendance_status', 1);
+                });
+        })->take(2);*/
         foreach ($students as $student) {
             $dailies = Daily::
             where('st_id', $student->st_no)->lastTwoDays($h_date)
@@ -42,6 +51,16 @@ class DailyController extends Controller
 
             $student->daily = $dailies->toArray();
         }
+        /*foreach ($students as $student) {
+            $dailies = Daily::
+            where('st_id', $student->st_no)->lastTwoDays($h_date)
+                ->with('daily_behavior')
+                ->with('daily_memorize')
+                ->orderby('h_date', 'desc')
+                ->get();
+
+            $student->daily = $dailies->toArray();
+        }*/
         $teacher = Teacher::where('THalaqah', $StHalaqah)->where('hide', 0)->get();
         If (count($teacher) > 1) {
             return 'المعلم يدرس في أكثر من حلقة. يجب حذف الحلقات الآخرى أو ربطها بمعلم آخر';
@@ -52,9 +71,9 @@ class DailyController extends Controller
 
         $school = School::where('id', $halakah->EdarahID)->first();
 
-        $SelectedDayDaily = Daily::where('h_date', $h_date)->whereIn('st_id', $studentsInDaily->toArray())->get();
+        $selected_day_daily = Daily::where('h_date', $h_date)->whereIn('st_id', $studentsInDaily->toArray())->get();
 
-        $SelectedDayDaily = count($SelectedDayDaily) ? true : false;
+        $selected_day_daily = count($selected_day_daily) ? true : false;
 
 //        $this->aprint($teacher->toArray());
 //        $this->aprint($halakah->toArray());
@@ -66,19 +85,22 @@ class DailyController extends Controller
             "halakah"          => $halakah->toArray(),
             "school"           => $school->toArray(),
             "students"         => $students->toArray(),
-            "SelectedDayDaily" => $SelectedDayDaily
+            "selected_day_daily" => $selected_day_daily
         ], JSON_UNESCAPED_UNICODE));
     }
 
-    public function memorize_and_behavior_types()
+    public function basic_data()
     {
         $memorize_types = MemorizeType::where('is_active', 1)->orderBy('order')->get();
 
-        $behaviorTypes = BehaviorTypes::get();
+        $behavior_types = BehaviorTypes::get();
+
+        $minimum_memorize = MinimumMemorize::get();
 
         return (json_encode([
-            "memorize_types" => $memorize_types,
-            "behavior_types" => $behaviorTypes
+            "memorize_types"   => $memorize_types,
+            "behavior_types"   => $behavior_types,
+            "minimum_memorize" => $minimum_memorize
         ], JSON_UNESCAPED_UNICODE));
     }
 
@@ -118,46 +140,6 @@ class DailyController extends Controller
             return 'تم تجهيز اليوم بنجاح';
         }
 
-    }
-
-    public function allJson1($h_date, $StHalaqah)
-    {
-
-        $memorize_types = MemorizeType::where('is_active', 1)->orderBy('order')->get();
-
-//        $methods = Method::with('memorizeType')->get();
-
-        $allBehaviors = BehaviorTypes::get();
-
-        $students = Student::inHalakah($StHalaqah)->get();
-
-        $student_ids = array_map(function ($c) {
-            return $c['st_no'];
-        }, $students->toArray());
-
-
-        foreach ($students as $student) {
-            $dailies = Daily::
-            where('st_id', $student->st_no)->lastTwoDays($h_date)
-                ->with('daily_behavior')
-                ->with('daily_memorize')
-                ->orderby('h_date', 'desc')
-                ->get();
-
-            $student->daily = $dailies->toArray();
-        }
-
-
-        $SelectedDayDaily = Daily::where('h_date', $h_date)->whereIn('st_id', $student_ids)->get();
-
-        $SelectedDayDaily = count($SelectedDayDaily) ? true : false;
-        return response()->json([
-            "students"         => $students,
-            "memorize_types"   => $memorize_types,
-            "SelectedDayDaily" => $SelectedDayDaily,
-            "selectedDate"     => $this->StringToDate($h_date),
-            "behavior_types"   => $allBehaviors
-        ]);
     }
 
     public function StringToDate($strDate)

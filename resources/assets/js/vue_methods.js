@@ -1,5 +1,5 @@
 var $vue_methods = {
-    degree: function (my_class) {
+    mark: function (my_class) {
         switch (true) {
             case (my_class == 'success'):
                 return 'ممتاز';
@@ -12,35 +12,36 @@ var $vue_methods = {
         }
     },
 
-    getMemorizeAndBehaviorTypes: function () {
-        this.$http.get('daily/memorize_and_behavior_types/', function (data) {
+    getBasicData: function () {
+        this.$http.get('daily/basic_data/', function (data) {
             this.behavior_types = data.behavior_types;
             this.memorize_types = data.memorize_types;
         }.bind(this));
     },
+
     fillSoraAndAyahList: function () {
-        var x = 1;
-        this.errorsMaxCount = ([{'value': 0, 'text': 0}]);
-        while (x < 21) {
-            this.errorsMaxCount.push({'value': x, 'text': x});
+        var x = 0;
+        this.errors_max_count = [];
+        while (x < 11) {
+            this.errors_max_count.push({'value': x, 'text': x});
             x++;
         }
-        this.quranIdAndName = [{value: '', text: 'حدد السورة'}];
-        this.quranIdAndAyat = [{value: '', text: 'حدد الآية'}];
+        this.quran_id_and_name = [{value: '', text: 'حدد السورة'}];
+        this.quran_id_and_ayat = [{value: '', text: 'حدد الآية'}];
         this.quran.forEach(function (sora) {
-            this.quranIdAndName.push({value: sora.n, text: sora.t});
-            this.quranIdAndAyat.push({value: sora.n, text: sora.a});
+            this.quran_id_and_name.push({value: sora.n, text: sora.t});
+            this.quran_id_and_ayat.push({value: sora.n, text: sora.a});
         }.bind(this));
     },
 
     getAllStudentsData: function () {
         this.students.splice(0);
         this.summaries.splice(0);
-        this.SelectedDayDaily = true;
-        var rowDate = date_to_no(this.selectedDate);
+        this.selected_day_daily = true;
+        var rowDate = date_to_no(this.selected_date);
         if (!rowDate) return false;
         this.$http.get('daily/allJson/' + rowDate + '/215', function (data) {
-            this.SelectedDayDaily = data.SelectedDayDaily;
+            this.selected_day_daily = data.selected_day_daily;
             this.students = data.students;
             this.teacher = data.teacher;
             this.halakah = data.halakah;
@@ -50,110 +51,90 @@ var $vue_methods = {
     },
 
     extractSelectedMemorizeToArray: function (memorizeDate, memorizeTypeID, student) {
-        var a_point = this.singleMemorizeData(memorizeTypeID).a_point;
-        var memorize = {
-            id: null, daily_id: null, memorize_type_id: memorizeTypeID,
-            start_sora: null, start_aya: null, end_sora: null, end_aya: null,
-            errors_count: 0, hesitations_count: 0,
-            points: a_point, notes: null, is_not_memorized: false,
-            applyToAllStudents: false, halakah_id: this.halakah.AutoNo, h_date: this.selectedDate
-        };
-        var selectedDailyData = this.singleDailyData(student, memorizeDate);
+        var a_point = this.findMemorizeType(memorizeTypeID).a_point;
 
-        if (!selectedDailyData.daily_memorize) return memorize;
-        selectedDailyData.daily_memorize.forEach(function (st_memorize) {
-            if (memorizeTypeID == st_memorize.memorize_type_id) {
-                memorize = st_memorize;
-                memorize.daily_id = selectedDailyData.id;
-                memorize.memorize_type_id = memorizeTypeID;
-            }
-            //}
-        }.bind(this));
+        var student_daily = _.findWhere(student.daily, {h_date: date_to_no(memorizeDate)}) || {};
+        var memorize = _.findWhere(student_daily.daily_memorize, {memorize_type_id: memorizeTypeID, daily_id: student_daily.id}) || {
+                id: null, daily_id: null, memorize_type_id: memorizeTypeID,
+                start_sora: null, start_aya: null, end_sora: null, end_aya: null,
+                errors_count: 0, hesitations_count: 0,
+                points: a_point, notes: null, is_not_memorized: false,
+                applyToAllStudents: false, halakah_id: this.halakah.AutoNo, h_date: this.selected_date
+            };
+
+        if (!student_daily.daily_memorize) return memorize;
+
         return memorize;
     },
 
-    findStudentById: function (studentID) {
-        var student = {};
-        this.students.forEach(function (st) {
-            if (st.st_no == studentID) {
-                student = st;
-                return false;
-            }
-        });
-        return student;
+    findStudent: function (studentID) {
+        return _.findWhere(this.students, {st_no: studentID}) || {};
     },
 
     openMemorizeModal: function (memorizeTypeID, studentID) {
-        var student = this.findStudentById(studentID);
-        this.CurrentMemorizeTypeID = memorizeTypeID;
-        this.selectedStudentInfo = student;
-        this.previousMemorize = {};
-        this.newMemorize = this.extractSelectedMemorizeToArray(this.selectedDate, memorizeTypeID, student);
-        this.$set('newMemorize.my_class', this.pointClass(this.newMemorize));
-        this.$setWithoutBind('old_memorize', this.newMemorize);
-        //this.newMemorize.my_class = this.pointClass(this.newMemorize);
+        this.selected_student_info = this.findStudent(studentID);
+        this.current_memorize_type_id = memorizeTypeID;
+        this.previous_daily_memorize = {};
+        this.new_daily_memorize = this.extractSelectedMemorizeToArray(this.selected_date, memorizeTypeID, this.selected_student_info);
+        this.$set('new_daily_memorize.my_class', this.pointClass(this.new_daily_memorize));
+        this.$setWithoutBind('old_daily_memorize', this.new_daily_memorize);
 
-        //console.info(this.newMemorize);
-        student.daily.forEach(function (daily) {
-            if (date_to_no(this.selectedDate) != daily.h_date) {
+        this.selected_student_info.daily.forEach(function (daily) {
+            if (date_to_no(this.selected_date) != daily.h_date) {
                 daily.daily_memorize.forEach(function (memorize) {
                     if (memorizeTypeID == memorize.memorize_type_id) {
-                        this.previousDate = rawToFormattedDate(daily.h_date);
+                        this.previous_date = rawToFormattedDate(daily.h_date);
                     }
                 }.bind(this));
-            } else if (date_to_no(this.selectedDate) == daily.h_date) {
-                this.CurrentDailyId = daily.id;
+            } else if (date_to_no(this.selected_date) == daily.h_date) {
+                this.current_daily_id = daily.id;
             }
         }.bind(this));
 
 
-        if (this.previousDate) {
-            this.previousMemorize = this.extractSelectedMemorizeToArray(this.previousDate, memorizeTypeID, student);
+        if (this.previous_date) {
+            this.previous_daily_memorize = this.extractSelectedMemorizeToArray(this.previous_date, memorizeTypeID, this.selected_student_info);
         }
 
-        if (!this.previousMemorize.id && !this.newMemorize.id) {
-            this.getPreviousMemorize(date_to_no(this.selectedDate), memorizeTypeID, student.st_no)
+        if (!this.previous_daily_memorize.id && !this.new_daily_memorize.id) {
+            this.getPreviousMemorize(date_to_no(this.selected_date), memorizeTypeID, this.selected_student_info.st_no)
         } else {
             this.prepareNewDayMemorization();
         }
 
         setTimeout(reloadMaterializeDOM, 1000);
-        this.newMemorize.end_aya = !this.newMemorize.end_aya ? this.newMemorize.start_aya : this.newMemorize.end_aya;
-        //this.newMemorize.my_class = this.pointClass(this.newMemorize);
+        this.new_daily_memorize.end_aya = !this.new_daily_memorize.end_aya ? this.new_daily_memorize.start_aya : this.new_daily_memorize.end_aya;
         $('#daily_memorize_store').openModal({dismissible: false});
     },
 
 
     openBehaviorIndexModal: function (studentID) {
-        var student = this.findStudentById(studentID);
-        this.selectedStudentInfo = student;
-        student.daily.forEach(function (daily) {
-            if (date_to_no(this.selectedDate) == daily.h_date) {
-                this.CurrentDailyId = daily.id;
-                this.selectedStudentBehaviors = daily.daily_behavior;
-            }
-        }.bind(this));
-        if (this.selectedStudentBehaviors.length) {
+        var student = this.findStudent(studentID);
+        this.selected_student_info = student;
+
+        var daily = _.findWhere(student.daily, {h_date: date_to_no(this.selected_date)}) || {};
+        this.current_daily_id = daily.id;
+        this.selected_student_behaviors = daily.daily_behavior;
+
+        if (this.selected_student_behaviors.length) {
             $('#modal_behavior_index').openModal();
         } else {
             this.openBehaviorStoreModal();
         }
-        //console.log(this.new_daily_behavior);
     },
 
     openBehaviorStoreModal: function (daily_behavior_id) {
         if (daily_behavior_id) {
-            this.selectedStudentBehaviors.forEach(function (behavior) {
-                if (daily_behavior_id == behavior.id) {
-                    this.new_daily_behavior = behavior;
-                    this.$set('new_daily_behavior.behavior_type', this.singleBehaviorData(behavior.behavior_id).behavior_type);
-                    this.$setWithoutBind('old_daily_behavior', this.new_daily_behavior);
-                }
-            }.bind(this));
+
+            var behavior = _.findWhere(this.selected_student_behaviors, {id: daily_behavior_id}) || {};
+            this.new_daily_behavior = behavior;
+            this.$set('new_daily_behavior.behavior_type', this.findBehavior(behavior.behavior_id).behavior_type);
+            this.$setWithoutBind('old_daily_behavior', this.new_daily_behavior);
+
         } else {
             this.new_daily_behavior = {
                 "id": null,
-                "daily_id": this.CurrentDailyId,
+                "daily_id": this.current_daily_id,
                 "behavior_id": null,
                 "points": 0,
                 "notes": null,
@@ -162,28 +143,27 @@ var $vue_methods = {
         }
         $('#modal_behavior_index').closeModal();
         $('#modal_behavior_store').openModal({dismissible: false});
-        //console.info(this.new_daily_behavior);
     },
 
     prepareNewDayMemorization: function () {
 //إذا كان يوم جديد فيتم تجهيز بيانات اليوم كبداية التسميع
-        if (!this.newMemorize.id && this.previousMemorize.id) {
-            this.newMemorize.daily_id = this.CurrentDailyId;
-            if (!this.previousMemorize.is_not_memorized) {
-                var $last_aya = this.previousMemorize.end_aya >= this.quran[this.previousMemorize.end_sora - 1].a;
-                this.newMemorize.start_sora = $last_aya ? this.previousMemorize.end_sora + 1 : this.previousMemorize.end_sora;
-                this.newMemorize.start_aya = $last_aya ? 1 : this.previousMemorize.end_aya + 1;
+        if (!this.new_daily_memorize.id && this.previous_daily_memorize.id) {
+            this.new_daily_memorize.daily_id = this.current_daily_id;
+            if (!this.previous_daily_memorize.is_not_memorized) {
+                var $last_aya = this.previous_daily_memorize.end_aya >= this.quran[this.previous_daily_memorize.end_sora - 1].a;
+                this.new_daily_memorize.start_sora = $last_aya ? this.previous_daily_memorize.end_sora + 1 : this.previous_daily_memorize.end_sora;
+                this.new_daily_memorize.start_aya = $last_aya ? 1 : this.previous_daily_memorize.end_aya + 1;
 
-                this.newMemorize.end_sora = $last_aya ? this.previousMemorize.end_sora + 1 : this.previousMemorize.end_sora;
+                this.new_daily_memorize.end_sora = $last_aya ? this.previous_daily_memorize.end_sora + 1 : this.previous_daily_memorize.end_sora;
 
                 //إذا كانت آخر سورة هي الناس
-                this.newMemorize.start_sora = this.newMemorize.start_sora == 114 ? 114 : this.newMemorize.start_sora;
+                this.new_daily_memorize.start_sora = this.new_daily_memorize.start_sora == 114 ? 114 : this.new_daily_memorize.start_sora;
             } else {
-                this.newMemorize.start_sora = this.previousMemorize.start_sora;
-                this.newMemorize.start_aya = this.previousMemorize.start_aya;
+                this.new_daily_memorize.start_sora = this.previous_daily_memorize.start_sora;
+                this.new_daily_memorize.start_aya = this.previous_daily_memorize.start_aya;
 
-                this.newMemorize.end_sora = this.previousMemorize.end_sora;
-                this.newMemorize.end_aya = this.previousMemorize.end_aya;
+                this.new_daily_memorize.end_sora = this.previous_daily_memorize.end_sora;
+                this.new_daily_memorize.end_aya = this.previous_daily_memorize.end_aya;
             }
         }
         this.getAyatCount();
@@ -191,63 +171,47 @@ var $vue_methods = {
 
     getPreviousMemorize: function (h_date, memorizeTypeID, studentID) {
         this.$http.get('daily_memorize/getMemorizeData/' + h_date + '/' + memorizeTypeID + '/' + studentID, function (data) {
-            this.previousMemorize = data;
+            this.previous_daily_memorize = data;
             this.prepareNewDayMemorization();
         }.bind(this));
     },
 
     getAyatCount: function () {
-        if (this.newMemorize.start_sora) {
-            this.sora1Ayat = this.quran[this.newMemorize.start_sora - 1].a;
+        if (this.new_daily_memorize.start_sora) {
+            this.sora_1_ayat = this.quran[this.new_daily_memorize.start_sora - 1].a;
             var x = 1;
-            this.sora1AyatArray = ([{value: '', text: 'حدد الآية'}]);
-            while (x <= this.sora1Ayat) {
-                this.sora1AyatArray.push({value: x, text: x});
+            this.sora_1_ayat_array = ([{value: '', text: 'حدد الآية'}]);
+            while (x <= this.sora_1_ayat) {
+                this.sora_1_ayat_array.push({value: x, text: x});
                 x++;
             }
         }
-        if (this.newMemorize.end_sora) {
-            this.sora2Ayat = this.quran[this.newMemorize.end_sora - 1].a;
+        if (this.new_daily_memorize.end_sora) {
+            this.sora_2_ayat = this.quran[this.new_daily_memorize.end_sora - 1].a;
             var y = 1;
-            this.sora2AyatArray = ([{value: '', text: 'حدد الآية'}]);
-            while (y <= this.sora2Ayat) {
-                this.sora2AyatArray.push({value: y, text: y});
+            this.sora_2_ayat_array = ([{value: '', text: 'حدد الآية'}]);
+            while (y <= this.sora_2_ayat) {
+                this.sora_2_ayat_array.push({value: y, text: y});
                 y++;
             }
         }
     },
 
     modelClass: function () {
-        if (this.newMemorize.id > 0)
-            return this.pointClass(this.newMemorize);
+        if (this.new_daily_memorize.id > 0)
+            return this.pointClass(this.new_daily_memorize);
     },
 
-    singleMemorizeData: function (memorizeTypeID) {
-        var selectedMemorize = '';
-        this.memorize_types.forEach(function (memorize) {
-            if (memorizeTypeID == memorize.id) {
-                selectedMemorize = memorize;
-                return false;
-            }
-        });
-        return selectedMemorize;
+    findMemorizeType: function (memorizeTypeID) {
+        return _.findWhere(this.memorize_types, {id: memorizeTypeID}) || {};
     },
 
-    singleBehaviorData: function (behavior_id) {
-        var tmp_behavior = {};
-        this.behavior_types.forEach(function (behavior) {
-            if (behavior_id == behavior.id) {
-                tmp_behavior.type = behavior.behavior_type == 1 ? 'إيجابي' : 'سلبي';
-                tmp_behavior.behavior_type = behavior.behavior_type;
-                tmp_behavior.name = behavior.name;
-                tmp_behavior.points = behavior.points;
-            }
-        });
-        return tmp_behavior;
+    findBehavior: function (behavior_id) {
+        return _.findWhere(this.behavior_types, {id: behavior_id}) || {};
     },
 
     pointClass: function (st_memorize) {
-        var a_point = this.singleMemorizeData(st_memorize.memorize_type_id).a_point;
+        var a_point = this.findMemorizeType(st_memorize.memorize_type_id).a_point;
         var b_point = (a_point / 3) * 2;
 
         var st_points = st_memorize.points;
@@ -264,161 +228,100 @@ var $vue_methods = {
         return 'danger';
     },
 
-    singleDailyData: function (student, Date) {
-        if (!student.daily.length) return {};
-        var rowDate = date_to_no(Date);
-        var selectedDaily = {};
-        student.daily.forEach(function (daily, index) {
-            if (daily.h_date == rowDate) {
-
-                selectedDaily = daily;
-                return false;
-            }
-        });
-        return selectedDaily;
-    },
-
     studentBehaviorsPoints: function (student, behaviorTypeID) {
-        var selectedDailyIndex = this.singleDailyData(student, this.selectedDate);
-        var totalBehaviorsPoints = 0;
-        if (!selectedDailyIndex.daily_behavior) return false;
+        var student_daily = _.findWhere(student.daily, {h_date: date_to_no(this.selected_date)}) || {};
 
-        selectedDailyIndex.daily_behavior.forEach(function (behavior) {
-            var singleBehavior = this.singleBehaviorData(behavior.behavior_id);
-            //console.info('singleBehavior :' + singleBehavior);
+        var totalBehaviorsPoints = 0;
+        if (!student_daily.daily_behavior) return false;
+
+        student_daily.daily_behavior.forEach(function (behavior) {
+            var singleBehavior = this.findBehavior(behavior.behavior_id);
             if ((behaviorTypeID) == singleBehavior.behavior_type) {
                 totalBehaviorsPoints += parseFloat(behavior.points);
             }
         }.bind(this));
-        if (totalBehaviorsPoints) return totalBehaviorsPoints;
 
-        return false;
+        return totalBehaviorsPoints || false;
+
     },
 
     studentMemorizeData: function (student, memorizeTypeID) {
-        var memorize = {};
-        var selectedDailyData = this.singleDailyData(student, this.selectedDate);
-        if (selectedDailyData.daily_memorize) {
-            selectedDailyData.daily_memorize.forEach(function (st_memorize) {
-
-                if (memorizeTypeID == st_memorize.memorize_type_id) {
-
-                    memorize.my_class = this.pointClass(st_memorize);
-                    memorize.points = st_memorize.points;
-                    return false;
-                }
-            }.bind(this));
-        }
-        if (!memorize.my_class) memorize.my_class = 'default text-muted';
-        if (!memorize.points) memorize.points = 0;
+        var student_daily = _.findWhere(student.daily, {h_date: date_to_no(this.selected_date)}) || {};
+        var memorize = getDataFromObject(_.findWhere(student_daily.daily_memorize, {memorize_type_id: memorizeTypeID, daily_id: student_daily.id}));
+        memorize.my_class = _.size(memorize) ? this.pointClass(memorize) : 'default text-muted';
+        memorize.points = _.size(memorize) ? memorize.points : 0;
         return memorize;
-
     },
 
     changeLocalMemorize: function (typeOfChange) {
-        this.students.forEach(function (student) {
-            if (student.st_no == this.selectedStudentInfo.st_no) {
-                student.daily.forEach(function (daily) {
-                    if (daily.id == this.newMemorize.daily_id) {
+        var student = _.findWhere(this.students, {st_no: this.selected_student_info.st_no}) || {};
+        var daily = _.findWhere(student.daily, {id: this.new_daily_memorize.daily_id}) || {};
+        if (typeOfChange == 'store') {
 
-                        if (typeOfChange == 'store') {
+            daily.daily_memorize.push(this.new_daily_memorize);
 
-                            daily.daily_memorize.push(this.newMemorize);
+        } else if (typeOfChange == 'destroy') {
 
-                        } else if (typeOfChange == 'destroy') {
-
-                            for (var i3 = 0; i3 < daily.daily_memorize.length; i3++) {
-                                if (daily.daily_memorize[i3].id == this.newMemorize.id) {
-                                    daily.daily_memorize.splice(i3, 1);
-                                }
-                            }
-
-                        }
-                    }
-                }.bind(this));
-            }
-        }.bind(this));
-
+            daily.daily_memorize.forEach(function (memorize, i) {
+                if (daily_memorize.id == this.new_daily_memorize.id) {
+                    daily.daily_memorize.splice(i, 1);
+                }
+            }.bind(this));
+        }
     },
+
     changeLocalBehavior: function (typeOfChange) {
-        this.students.forEach(function (student,f1) {
-            if (student.st_no == this.selectedStudentInfo.st_no) {
-                student.daily.forEach(function (daily,f2) {
-                    if (daily.id == this.new_daily_behavior.daily_id) {
+        var student = _.findWhere(this.students, {st_no: this.selected_student_info.st_no}) || {};
+        var daily = _.findWhere(student.daily, {id: this.new_daily_behavior.daily_id}) || {};
+        if (typeOfChange == 'store') {
+            daily.daily_behavior.push(this.new_daily_behavior);
 
-                        if (typeOfChange == 'store') {
-                            daily.daily_behavior.push(this.new_daily_behavior);
+        } else if (typeOfChange == 'destroy') {
 
-                        } else if (typeOfChange == 'destroy') {
-
-                            daily.daily_behavior.forEach(function (daily_behavior, f3) {
-                                if (daily_behavior.id == this.new_daily_behavior.id) {
-                                    daily.daily_behavior.splice(f3, 1);
-                                }
-                            }.bind(this));
-                            //for (var x = 0; x < daily.daily_behavior.length; x++) {
-                            //    if (daily.daily_behavior[x].id == this.new_daily_behavior.id) {
-                            //        daily.daily_behavior.splice(x, 1);
-                            //    }
-                            //}
-                        }
-                    }
-                }.bind(this));
-            }
-        }.bind(this));
-
+            daily.daily_behavior.forEach(function (daily_behavior, i) {
+                if (daily_behavior.id == this.new_daily_behavior.id) {
+                    daily.daily_behavior.splice(i, 1);
+                }
+            }.bind(this));
+        }
     },
+
     setSortType: function () {
-        if (this.sortType == 'stFullName4') this.sortOrder = 1;
-        if (this.sortType == 'finalPoints') this.sortOrder = -1;
+        if (this.sort_type == 'stFullName4') this.sort_order = 1;
+        if (this.sort_type == 'finalPoints') this.sort_order = -1;
     },
-
-    /*makeAjaxRequest: function ($url, $requestData) {
-     this.ajaxRespondData = null;
-     this.$http.post($url, $requestData,
-     function (data) {
-     reactToAjaxSuccess(data);
-     }.bind(this))
-     .error(function (data, status, request) {
-     reactToAjaxError(data, status, request);
-     })
-     },*/
 
     prepareNewMemorizeBeforeSaving: function () {
-        this.newMemorize.is_not_memorized = this.newMemorize.is_not_memorized ? this.newMemorize.is_not_memorized : 0;
-        this.newMemorize.errors_count = this.newMemorize.errors_count ? this.newMemorize.errors_count : 0;
-        this.newMemorize.hesitations_count = this.newMemorize.hesitations_count ? this.newMemorize.hesitations_count : 0;
+        this.new_daily_memorize.is_not_memorized = this.new_daily_memorize.is_not_memorized ? this.new_daily_memorize.is_not_memorized : 0;
+        this.new_daily_memorize.errors_count = this.new_daily_memorize.errors_count ? this.new_daily_memorize.errors_count : 0;
+        this.new_daily_memorize.hesitations_count = this.new_daily_memorize.hesitations_count ? this.new_daily_memorize.hesitations_count : 0;
     },
 
     storeMemorize: function () {
         this.prepareNewMemorizeBeforeSaving();
 
-        if (this.newMemorize.id) {
+        if (this.new_daily_memorize.id) {
 
-            this.$http.put('daily_memorize/update/', this.newMemorize,
+            this.$http.put('daily_memorize/update/', this.new_daily_memorize,
                 function (data) {
                     $('#daily_memorize_store').closeModal();
                     reactToAjaxSuccess(data);
-                    //this.changeLocalMemorize('update');
                 }.bind(this))
                 .error(function (data, status, request) {
                     reactToAjaxError(data, status, request);
                 });
+
         } else {
 
-            this.newMemorize.daily_id = this.CurrentDailyId;
-            this.newMemorize.memorize_type_id = this.CurrentMemorizeTypeID;
+            this.new_daily_memorize.daily_id = this.current_daily_id;
+            this.new_daily_memorize.memorize_type_id = this.current_memorize_type_id;
 
-            this.$http.post('daily_memorize/store/', this.newMemorize,
+            this.$http.post('daily_memorize/store/', this.new_daily_memorize,
                 function (data) {
-
                     if (data.data.id == 'Refresh') {
-                        this.students.splice(0);
-                        this.summaries.splice(0);
                         this.getAllStudentsData();
-
                     } else {
-                        this.newMemorize.id = data.data.id;
+                        this.new_daily_memorize.id = data.data.id;
                         this.changeLocalMemorize('store');
                     }
                     $('#daily_memorize_store').closeModal();
@@ -436,7 +339,7 @@ var $vue_methods = {
         $('#msg_modal').openModal({
             dismissible: false,
             complete: function () {
-                this.$http.delete('daily_memorize/destroy/' + this.newMemorize.id, null,
+                this.$http.delete('daily_memorize/destroy/' + this.new_daily_memorize.id, null,
                     function (data) {
                         $('#daily_memorize_store').closeModal();
                         reactToAjaxSuccess(data);
@@ -450,11 +353,7 @@ var $vue_methods = {
     },
 
     destroyBehavior: function (behavior_id) {
-        this.selectedStudentBehaviors.forEach(function (behavior) {
-            if (behavior_id == behavior.id) {
-                this.new_daily_behavior = behavior;
-            }
-        }.bind(this));
+        this.new_daily_behavior = _.findWhere(this.selected_student_behaviors, {id: behavior_id}) || {};
         var _behavior_id = behavior_id ? behavior_id : this.new_daily_behavior.id;
         this.msg_title = 'تأكيد الحذف';
         this.msg_body = 'هل تريد حذف السلوك الحالي ؟';
@@ -464,7 +363,6 @@ var $vue_methods = {
                 this.$http.delete('daily_behavior/destroy/' + _behavior_id, null,
                     function (data) {
                         reactToAjaxSuccess(data);
-                        //$('#modal_behavior_store').closeModal();
                         this.changeLocalBehavior('destroy');
                     }.bind(this))
                     .error(function (data, status, request) {
@@ -475,15 +373,11 @@ var $vue_methods = {
     },
 
     storeBehavior: function () {
-        //this.prepareNewMemorizeBeforeSaving();
-
         if (this.new_daily_behavior.id) {
-
             this.$http.put('daily_behavior/update/', this.new_daily_behavior,
                 function (data) {
                     reactToAjaxSuccess(data);
                     $('#modal_behavior_store').closeModal();
-                    //this.changeLocalBehavior('update');
                 }.bind(this))
                 .error(function (data, status, request) {
                     reactToAjaxError(data, status, request);
@@ -491,15 +385,10 @@ var $vue_methods = {
 
         } else {
 
-            //this.new_daily_behavior.daily_id = this.CurrentDailyId;
-            //this.new_daily_behavior.behavior_type_id = this.CurrentMemorizeTypeID;
-
             this.$http.post('daily_behavior/store/', this.new_daily_behavior,
                 function (data) {
-
                     this.new_daily_behavior.id = data.data.id;
                     this.changeLocalBehavior('store');
-
                     reactToAjaxSuccess(data);
                     $('#modal_behavior_store').closeModal();
                 }.bind(this))
@@ -510,7 +399,7 @@ var $vue_methods = {
     },
 
     prepareNewDailyForHalakah: function () {
-        this.$http.post('daily/prepareForHalakah/', {'h_date': date_to_no(this.selectedDate), 'StHalaqah': 215},
+        this.$http.post('daily/prepareForHalakah/', {'h_date': date_to_no(this.selected_date), 'StHalaqah': 215},
             function (data) {
                 reactToAjaxSuccess(data);
                 this.getAllStudentsData();
@@ -521,19 +410,32 @@ var $vue_methods = {
     },
 
     randomPhrase: function () {
-        return randomPhrase[Math.floor((Math.random() * randomPhrase.length - 1) + 1)];
+        return _.sample(random_phrases);
     },
 
     calculatePoints: function () {
-        var a_point = parseFloat(this.singleMemorizeData(this.CurrentMemorizeTypeID).a_point);
-        this.newMemorize.points = parseFloat(a_point) - parseFloat(this.newMemorize.errors_count) - (parseFloat(this.newMemorize.hesitations_count) / 2);
-        if (this.newMemorize.points <= 0) {
-            this.newMemorize.points = 0;
-            this.newMemorize.is_not_memorized = 1;
+
+        //max points for selected memorize type
+        var a_point = parseFloat(this.findMemorizeType(this.current_memorize_type_id).a_point);
+
+        this.new_daily_memorize.points = parseFloat(a_point) - parseFloat(this.new_daily_memorize.errors_count) - (parseFloat(this.new_daily_memorize.hesitations_count) / 2);
+
+        console.info(getCharCountJs(this.new_daily_memorize.start_sora, this.new_daily_memorize.start_aya, this.new_daily_memorize.end_sora, this.new_daily_memorize.end_aya));
+
+        if (this.new_daily_memorize.points <= 0) {
+            this.new_daily_memorize.points = 0;
+            this.new_daily_memorize.is_not_memorized = 1;
         } else {
-            this.newMemorize.is_not_memorized = 0;
+            this.new_daily_memorize.is_not_memorized = 0;
         }
-        this.newMemorize.my_class = this.pointClass(this.newMemorize);
+        this.$set('new_daily_memorize.my_class', this.pointClass(this.new_daily_memorize));
+
+        //this.new_daily_memorize.my_class = this.pointClass(this.new_daily_memorize);
+        //console.log(this.new_daily_memorize.start_sora);
+        //console.log(this.new_daily_memorize.start_aya);
+        //console.log(this.new_daily_memorize.end_sora);
+        //console.log(this.new_daily_memorize.end_aya);
+
     },
     close_modal: function () {
         $('#msg_modal').closeModal();
@@ -547,5 +449,4 @@ var $vue_methods = {
             }
         }
     }
-
 };

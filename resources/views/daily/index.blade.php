@@ -8,47 +8,47 @@
                     <form>
 
                         <div class="input-field col s3 static">
-                            <input id="selectedDate" type="text" value="" zezo_date="true" v-model="selectedDate">
-                            <label for="selectedDate">التاريخ</label>
+                            <input id="selected_date" type="text" value="" zezo_date="true" v-model="selected_date">
+                            <label for="selected_date">التاريخ</label>
                         </div>
 
                         <div class="input-field col s3">
-                            <select name='searchType' id='searchType'>
-                                <option v-for="searchType in searchTypes" value="@{{ searchType.value }}">@{{searchType.text}}</option>
+                            <select name='search_type' id='search_type'>
+                                <option v-for="search_type in search_types" value="@{{ search_type.value }}">@{{search_type.text}}</option>
                             </select>
-                            <label for="searchType">نوع البحث</label>
+                            <label for="search_type">نوع البحث</label>
                         </div>
 
-                        <div v-show="searchType=='degree'" class="input-field col s3">
-                            <select name='degreeType' id='degreeType'>
-                                <option v-for="degree in degreeTypes" value='@{{ degree.value }}'> @{{degree.text}} </option>
+                        <div v-show="search_type=='mark'" class="input-field col s3">
+                            <select name='mark_type' id='mark_type'>
+                                <option v-for="mark in mark_types" value='@{{ mark.value }}'> @{{mark.text}} </option>
                             </select>
-                            <label for="degreeType">التقدير</label>
+                            <label for="mark_type">التقدير</label>
                         </div>
 
-                        <div v-show="searchType!='degree'" class="input-field col s3">
+                        <div v-show="search_type!='mark'" class="input-field col s3">
                             <input v-model="search" type='text' class='form-control' name='search' id='search' placeholder="بحث">
                             <label for="search">بحث</label>
                         </div>
 
                         <div class="input-field col s3">
-                            <select name='sortType' id='sortType'>
-                                <option v-for="sortType in sortTypes" value="@{{ sortType.value }}">@{{sortType.text}}</option>
+                            <select name='sort_type' id='sort_type'>
+                                <option v-for="sort_type in sort_types" value="@{{ sort_type.value }}">@{{sort_type.text}}</option>
                             </select>
-                            <label for="sortType">ترتيب</label>
+                            <label for="sort_type">ترتيب</label>
                         </div>
 
                     </form>
                 </div>
 
 
-                <div v-cloak v-if="SelectedDayDaily">
+                <div v-cloak v-if="selected_day_daily">
                     <div class="row" v-if="summaries.length">
                         <div class="remove-margin-left">
 
                             <div class="col hide-on-med-and-up">
                         <span>
-                            <input type="checkbox" name="select-all-s" id="select-all-s" v-model="checkAll">
+                            <input type="checkbox" name="select-all-s" id="select-all-s" v-model="check_all">
                             <label for="select-all-s">تحديد الكل</label>
                             {{--<span class="checkbox-label md-size-font"></span>--}}
                         </span>
@@ -56,7 +56,7 @@
 
                             <div class="col m3 hide-on-small-only">
                             <span class="md-size-font">
-                                <input type="checkbox" name="select-all-m" id="select-all-m" v-model="checkAll">
+                                <input type="checkbox" name="select-all-m" id="select-all-m" v-model="check_all">
                                 <label for="select-all-m">اسم الطالب</label>
                                 {{--<span class="checkbox-label">اسم الطالب</span>--}}
                             </span>
@@ -80,7 +80,7 @@
 
                     {{--#####################################--}}
 
-                    <template v-for="summary in summaries | orderBy sortType sortOrder | multiFilter"
+                    <template v-for="summary in summaries | orderBy sort_type sort_order | multiFilter"
                               transition="expand">
 
                         <div class="row">
@@ -88,7 +88,7 @@
                                 <div class="col s12 m3">
                                     <div class="remove-margin-left">
                                         <input type="checkbox" name="select-st" id="select-@{{ summary.st_no }}"
-                                               checked="@{{ checkAll }}">
+                                               checked="@{{ check_all }}">
                                         <label for="select-@{{ summary.st_no }}">@{{ summary.stFullName3 }}</label>
                                         {{--<label for="select-@{{ summary.st_no }}" class="hide-on-small-only tooltipped" data-position="top"--}}
                                                {{--data-tooltip="@{{ summary.stFullName4 + ' \r\n ' + summary.FatherMobileNo }}">@{{ summary.stFullName3 }}</label>--}}
@@ -167,8 +167,8 @@
                 </div>
 
                 {{--<div >--}}
-                {{--<div v-if="!summaries.length || !SelectedDayDaily">--}}
-                <div v-cloak v-if="!SelectedDayDaily">
+                {{--<div v-if="!summaries.length || !selected_day_daily">--}}
+                <div v-cloak v-if="!selected_day_daily">
                     <div class="section center-align">
                         <i class="material-icons medium grey-text text-lighten-1">info_outline</i>
                         <h4 class="title-font grey-text text-lighten-1 title-font">لاتوجد بيانات لهذا اليوم</h4>
@@ -176,7 +176,7 @@
                     </div>
                 </div>
                 {{--</div>--}}
-                <div v-cloak  v-if="!summaries.length && SelectedDayDaily && selectedDate" class="center center-align col s12 m10 offset-m1 l6 offset-l3">
+                <div v-cloak  v-if="!summaries.length && selected_day_daily && selected_date" class="center center-align col s12 m10 offset-m1 l6 offset-l3">
                     <div class="row">
                         {{--<i class="material-icons medium grey-text text-lighten-1">schedule</i>--}}
                         <br>
@@ -201,13 +201,13 @@
                     </div>
                 </div>
 
-                <div v-cloak class="section center-align" v-if="showNoResultFoundMsg && summaries.length">
+                <div v-cloak class="section center-align" v-if="show_no_result_found_msg && summaries.length">
                     <br>
                     <i class="material-icons medium grey-text text-lighten-1">not_interested</i>
                     <h4 class="medium grey-text text-lighten-1 title-font">لاتوجد نتائج</h4>
                 </div>
 
-                <div v-cloak class="section center-align" v-if="!selectedDate">
+                <div v-cloak class="section center-align" v-if="!selected_date">
                     <br>
                     <i class="material-icons medium grey-text text-lighten-1">announcement</i>
                     <h4 class="medium grey-text text-lighten-1 title-font">حدد التاريخ</h4>
@@ -216,7 +216,7 @@
         </div>
 
         <pre style="direction: ltr">
-        {{--@{{ showNoResultFoundMsg }}--}}
+        {{--@{{ show_no_result_found_msg }}--}}
         {{--@{{ summaries | json }}--}}
         {{--@{{ students | json }}--}}
         </pre>
@@ -247,27 +247,27 @@
         $(document).ready(function () {
 
             var today_h_date = rawToFormattedDate(getRawHijriDateFromArray(getHijriDate('now')));
-            $('#selectedDate').val(today_h_date);
-//            $('#selectedDate').val('1437/01/10');
-            content.selectedDate = $('#selectedDate').val();
+            $('#selected_date').val(today_h_date);
+//            $('#selected_date').val('1437/01/10');
+            content.selected_date = $('#selected_date').val();
             content.getAllStudentsData();
 
-            $('input[id=selectedDate]').change(function () {
+            $('input[id=selected_date]').change(function () {
                 content.getAllStudentsData();
 //                $('.tooltipped').tooltip({delay: 50});
             });
 
-            $('select[id=searchType]').on('change', function () {
-                content.searchType = $(this).val();
+            $('select[id=search_type]').on('change', function () {
+                content.search_type = $(this).val();
                 $('select').material_select();
             });
 
-            $('select[id=degreeType]').on('change', function () {
-                content.degreeType = $(this).val();
+            $('select[id=mark_type]').on('change', function () {
+                content.mark_type = $(this).val();
             });
 
-            $('select[id=sortType]').on('change', function () {
-                content.sortType = $(this).val();
+            $('select[id=sort_type]').on('change', function () {
+                content.sort_type = $(this).val();
                 content.setSortType();
             });
         });

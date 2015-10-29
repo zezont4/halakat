@@ -6,26 +6,26 @@
         <div id="blur" v-cloak>
             <div class="clearfix">
                 <div class="col col-xs-8 col-sm-3 static">
-                    <input v-model="selectedDate" type='text'
-                           class='form-control' name='selectedDate' id='selectedDate' zezo_date="true">
+                    <input v-model="selected_date" type='text'
+                           class='form-control' name='selected_date' id='selected_date' zezo_date="true">
                 </div>
                 <div class="col col-xs-4 col-sm-2">
-                    <select v-model="searchType" class='form-control' name='searchType' id='searchType'>
-                        <option v-for="searchType in searchTypes" value="@{{ searchType.value }}">@{{searchType.text}}</option>
+                    <select v-model="search_type" class='form-control' name='search_type' id='search_type'>
+                        <option v-for="search_type in search_types" value="@{{ search_type.value }}">@{{search_type.text}}</option>
                     </select>
                 </div>
-                <div v-if="searchType=='degree'" class="col col-xs-4 col-sm-2">
-                    <select v-model="degreeType" class='form-control' name='degreeType' id='degreeType'>
-                        <option v-for="degree in degreeTypes" value="@{{ degree.value }}">@{{degree.text}}</option>
+                <div v-if="search_type=='mark'" class="col col-xs-4 col-sm-2">
+                    <select v-model="mark_type" class='form-control' name='mark_type' id='mark_type'>
+                        <option v-for="mark in mark_types" value="@{{ mark.value }}">@{{mark.text}}</option>
                     </select>
                 </div>
-                <div v-if="searchType!='degree'" class="col col-xs-4 col-sm-2">
+                <div v-if="search_type!='mark'" class="col col-xs-4 col-sm-2">
                     <input v-model="search" type='text' class='form-control' name='search' id='search' placeholder="بحث">
                 </div>
 
                 <div class="col col-xs-4 col-sm-2">
-                    <select v-model="sortType" @change="setSortType()" class='form-control' name='sortType' id='sortType'>
-                    <option v-for="sortType in sortTypes" value="@{{ sortType.value }}">@{{sortType.text}}</option>
+                    <select v-model="sort_type" @change="setSortType()" class='form-control' name='sort_type' id='sort_type'>
+                    <option v-for="sort_type in sort_types" value="@{{ sort_type.value }}">@{{sort_type.text}}</option>
                     </select>
                 </div>
             </div>
@@ -37,7 +37,7 @@
                             <tr>
                                 <td class="td2">
                                     <input type="checkbox" name="select-all" id="select-all"
-                                                       v-model="checkAll"></td>
+                                                       v-model="check_all"></td>
                                 <td class="">اسم الطالب</td>
                             </tr>
                         </table>
@@ -53,13 +53,13 @@
 
 
             {{--الاسم--}}
-            <div class="clearfix padding-t-b-sm" v-for="summary in summaries | orderBy sortType sortOrder | multiFilter">
+            <div class="clearfix padding-t-b-sm" v-for="summary in summaries | orderBy sort_type sort_order | multiFilter">
                 <div class="col-xs-12 col-sm-3 col-md-4">
                     <div class="row">
                         <table class="name">
                             <tr>
                                 <td class="td2"><input type="checkbox" name="select-st" id="select-@{{ summary.st_no }}"
-                                                       checked="@{{ checkAll }}"></td>
+                                                       checked="@{{ check_all }}"></td>
                                 <td class="td3"><a href="#">@{{ summary.stFullName4 }}</a></td>
                             </tr>
                         </table>
@@ -122,7 +122,7 @@
                 </div>
             </div>
             {{--<pre style="direction: ltr">--}}
-            {{--@{{ newMemorize | json 4 }}--}}
+            {{--@{{ new_daily_memorize | json 4 }}--}}
             {{--</pre>--}}
         </div>
         @include('daily.memorize_form')
@@ -131,8 +131,8 @@
 
     <script>
         $(document).ready(function () {
-            $('#selectedDate').change(function () {
-                content.selectedDate = $('#selectedDate').val();
+            $('#selected_date').change(function () {
+                content.selected_date = $('#selected_date').val();
                 content.getDataFromDB();
             });
         });

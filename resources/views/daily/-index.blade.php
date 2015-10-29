@@ -8,7 +8,7 @@
                 <div class="row">
                     <table class="name">
                         <tr>
-                            <td class="td2"><input type="checkbox" name="select-all" id="select-all" v-model="checkAll"></td>
+                            <td class="td2"><input type="checkbox" name="select-all" id="select-all" v-model="check_all"></td>
                             <td class="">اسم الطالب</td>
                         </tr>
                     </table>
@@ -30,7 +30,7 @@
                         <table class="name">
                             <tr>
                                 {{--                        <td class="td1">{{$key+1}}</td>--}}
-                                <td class="td2"><input type="checkbox" name="select-st" id="select-{{$student->st_no}}" v-attr="checked:checkAll"></td>
+                                <td class="td2"><input type="checkbox" name="select-st" id="select-{{$student->st_no}}" v-attr="checked:check_all"></td>
                                 <td class="td3"><a href="#">{{$student->FullName4}}</a></td>
                                 {{--<td class="td4"><i class="click fa fa-info-circle fa-lg text-primary"></i></td>--}}
                             </tr>

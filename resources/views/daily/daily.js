@@ -8,7 +8,7 @@ var memorize = new Vue({
 var content = new Vue({
     el: '#content',
     data: {
-        checkAll: false
+        check_all: false
     }
 
 });

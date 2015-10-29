@@ -1,6 +1,6 @@
 function getCharCountJs(sura1, aya1, sura2, aya2) {
     var totalChars = 0;
-    quranCharCount.forEach(function (sura) {
+    quran_char_count.forEach(function (sura) {
         if (sura.s >= sura1 && sura.s <= sura2) {
             if ((sura.s == sura1 && sura.a < aya1) || (sura.s == sura2 && sura.a > aya2)) {
                 return;
@@ -12,7 +12,7 @@ function getCharCountJs(sura1, aya1, sura2, aya2) {
     return totalChars;
 }
 
-randomPhrase = [
+random_phrases = [
     'سبحان الله وبحمده',
     'استغفر الله',
     'وَعَسَى أَنْ تَكْرَهُوا شَيْئًا وَهُوَ خَيْرٌ لَكُمْ',
@@ -41,7 +41,6 @@ function reloadMaterializeDOM() {
 function reactToAjaxSuccess(data) {
     if (typeof data == 'object') {
         myAlert(data.msg);
-        this.ajaxRespondData = data.data;
     } else if (typeof data == 'string') {
         myAlert(data);
     }
@@ -98,7 +97,7 @@ Vue.http.options.root = '';
 Vue.config.debug = true;
 Vue.config.strict = false;
 var $vue_data = {
-    showNoResultFoundMsg: false,
+    show_no_result_found_msg: false,
     //allJson: {
     students: [],
     halakah: [],
@@ -106,56 +105,54 @@ var $vue_data = {
     school: [],
     memorize_types: [],
     behavior_types: [],
-    selectedStudentBehaviors: [],
-    selectedBehavior: [],
+    selected_student_behaviors: [],
+    //selectedBehavior: [],
     new_daily_behavior: {},
     old_daily_behavior: {},
-    studentTotalBehaviors: 0,
-    SelectedDayDaily: true,
-    selectedDate: null,
-    previousDate: null,
+    //student_total_behaviors: 0,
+    selected_day_daily: true,
+    selected_date: null,
+    previous_date: null,
     //},
-    CurrentMemorizeTypeID: null,
+    current_memorize_type_id: null,
     //CurrentStudentID: null,
-    CurrentDailyId: null,
-    newMemorize: {},
-    old_memorize: {},
-    previousMemorize: {},
-    selectedStudentInfo: {},
-    ajaxRespondData: null,
+    current_daily_id: null,
+    new_daily_memorize: {},
+    old_daily_memorize: {},
+    previous_daily_memorize: {},
+    selected_student_info: {},
     search: null,
-    searchType: 'name',
-    searchTypes: [
+    search_type: 'name',
+    search_types: [
         {value: 'name', text: 'بحث بإسم الطالب'},
         {value: 'points', text: 'بحث بمجموع النقاط'},
-        {value: 'degree', text: 'بحث بالتقدير'}],
-    sortTypes: [
+        {value: 'mark', text: 'بحث بالتقدير'}],
+    sort_types: [
         {value: 'stFullName4', text: 'ترتيب حسب إسم الطالب'},
         {value: 'finalPoints', text: 'ترتيب حسب مجموع النقاط'}],
-    sortType: 'stFullName4',
-    sortOrder: 1,
-    degreeTypes: [{value: '', text: 'الجميع'},
+    sort_type: 'stFullName4',
+    sort_order: 1,
+    mark_types: [{value: '', text: 'الجميع'},
         {value: 'success', text: 'ممتاز'},
         {value: 'info', text: 'جيد جدا'},
         {value: 'warning', text: 'جيد'},
         {value: 'danger', text: 'لم يحفظ'},
         {value: 'default', text: 'لم يسمِّع'}],
-    degreeType: null,
-    sora1Ayat: null,
-    sora1AyatArray: [],
-    sora2Ayat: null,
-    sora2AyatArray: [],
-    errorsMaxCount: [],
-    quranIdAndName: [],
-    quranIdAndAyat: [],
-    checkAll: false,
+    mark_type: null,
+    sora_1_ayat: null,
+    sora_1_ayat_array: [],
+    sora_2_ayat: null,
+    sora_2_ayat_array: [],
+    errors_max_count: [],
+    quran_id_and_name: [],
+    quran_id_and_ayat: [],
+    check_all: false,
     quran: quran,
-    quranCharCount: quranCharCount,
+    quran_char_count: quran_char_count,
     //ajaxMsg: null,
     //showAjaxMsg: false
-    randomPhrases: randomPhrase,
+    random_phrases: random_phrases,
     msg_ok: false,
     msg_title: null,
     msg_body: null
 };
-
