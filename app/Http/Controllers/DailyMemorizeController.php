@@ -11,7 +11,7 @@ class DailyMemorizeController extends Controller
 
     public function store(DailyMemorizeRequest $request)
     {
-        $memorize = false;
+        $memorize = null;
         if ($request->applyToAllStudents) {
             $h_date = str_replace('/', '', $request->h_date);
             $studentsInDaily = Daily::
@@ -72,8 +72,8 @@ class DailyMemorizeController extends Controller
             ->whereHas('daily_memorize', function ($query) use ($memorizeTypeID) {
                 $query->where('memorize_type_id', $memorizeTypeID);
             })->latest()->first();
-//        dd($daily);
-        $matchedMemorize = [
+//       for previous memorize
+        /*$matchedMemorize = [
             'id'                => null,
             'daily_id'          => null,
             'memorize_type_id'  => null,
@@ -86,7 +86,8 @@ class DailyMemorizeController extends Controller
             'points'            => null,
             'notes'             => null,
             'is_not_memorized'  => null
-        ];
+        ];*/
+        $matchedMemorize = [];
 //        dd($daily->toArray());
         if ($daily) {
             foreach ($daily->daily_memorize as $memorize) {

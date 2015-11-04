@@ -10,6 +10,22 @@ class Student extends Model
     protected $table = '0_students';
     protected $guarded = ['st_no'];
     protected $primaryKey = 'st_no';
+    protected $casts = [
+        'st_no'          => 'integer',
+        'StID'           => 'string',
+        'StName1'        => 'string',
+        'StName2'        => 'string',
+        'StName3'        => 'string',
+        'StName4'        => 'string',
+        'StBurthDate'    => 'string',
+        'StMobileNo'     => 'string',
+        'FatherMobileNo' => 'string',
+        'StEdarah'       => 'integer',
+        'StHalaqah'      => 'integer',
+        'home_study'     => 'integer',
+        'hide'           => 'integer',
+        'guardian_name'  => 'string',
+    ];
 
     public function daily()
     {

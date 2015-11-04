@@ -31,9 +31,6 @@ th {
 
 /*########################*/
 /* Materialize extra*/
-.card {
-    /* overflow: auto; */
-}
 
 .static {
     position: static;
@@ -124,60 +121,30 @@ span.number {
     font-size: 1.0rem;
 }
 
-a {
-    /* color: #339ACC; */
-}
-
 .btn1-success {
     color: #27ae60;
     border-color: #2ecc71 !important;
 }
-
-/*.btn1-success:hover {*/
-/*border-color: #27ae60 !important; */
-/*background-color: #fafafa;*/
-/*}*/
 
 .btn1-danger {
     color: #e57373;
     border-color: #e57373 !important;
 }
 
-/*.btn1-danger:hover {*/
-/*border-color: #c0392b !important;*/
-/*background-color: #eee;*/
-/*}*/
-
 .btn1-warning {
     color: #D4860A;
     border-color: rgb(241, 196, 15) !important;
 }
-
-/*.btn1-warning:hover {*/
-/*border-color: #D4860A !important;*/
-/*background-color: #eee;*/
-/*}*/
 
 .btn1-info {
     color: #2980b9;
     border-color: #3498db !important;
 }
 
-/*.btn1-info:hover {*/
-/*border-color: #2980b9 !important;*/
-/*background-color: #eee;*/
-/*}*/
-
 .btn1-default {
     border-color: #ccc;
     color: #bbb;
 }
-
-/*.btn1-default:hover {*/
-/*color: #7f8c8d;*/
-/*border-color: #7f8c8d !important;*/
-/*background-color: #eee;*/
-/*}*/
 
 .btn1 {
     border: 1px solid;
@@ -234,66 +201,6 @@ a {
 .modal {
     max-height: 90%;
     overflow: hidden;
-}
-
-.modal .modal-content {
-    /* overflow: hidden; */
-}
-
-@media only screen and (max-width: 992px) {
-    .modal {
-        width: 90%;
-    }
-}
-
-@media only screen and (min-width: 993px) {
-    .container {
-        width: 90%;
-    }
-
-    .remove-margin-right-left {
-        margin-left: -0.15rem;
-        margin-right: -0.15rem;
-    }
-
-    #toast-container .toast {
-        font-size: 18px;
-        font-family: "Droid Arabic Naskh", sans-serif;
-    }
-}
-
-@media screen and (max-width: 600px) {
-    div.padding_l_r_mini .btn {
-        margin: 4px 0;
-    }
-
-    .padding-t-b-sm {
-        padding-bottom: 12px;
-        padding-top: 15px;
-        border-bottom: 1px solid #eee;
-        /* border-bottom: none; */
-    }
-
-    .flag {
-        /* top: 5px; */
-    }
-
-    .padding_l_r_mini {
-        margin-left: -8px;
-        margin-right: -10px;
-    }
-
-    .btn1 {
-        border-right: 15px solid;
-    }
-
-    .margin-top-on-small {
-        margin-top: 10px;
-    }
-
-    .remove-margin-right-on-mid-and-up {
-        margin-right: 0;
-    }
 }
 
 button, button i {
@@ -372,7 +279,64 @@ nav .brand-logo img.logo {
 .text-danger {
     color: #e57373;
 }
+
 .btn-large {
     font-size: 24px;
     padding: 10px 20px;
+}
+
+@media only screen and (max-width: 992px) {
+    .modal {
+        width: 90%;
+    }
+}
+
+@media only screen and (min-width: 993px) {
+    .container {
+        width: 90%;
+    }
+
+    .remove-margin-right-left {
+        margin-left: -0.15rem;
+        margin-right: -0.15rem;
+    }
+
+    #toast-container .toast {
+        font-size: 18px;
+        font-family: "Droid Arabic Naskh", sans-serif;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    div.padding_l_r_mini .btn {
+        margin: 4px 0;
+    }
+
+    .padding-t-b-sm {
+        padding-bottom: 12px;
+        padding-top: 15px;
+        border-bottom: 1px solid #eee;
+        /* border-bottom: none; */
+    }
+
+    .flag {
+        /* top: 5px; */
+    }
+
+    .padding_l_r_mini {
+        margin-left: -8px;
+        margin-right: -10px;
+    }
+
+    .btn1 {
+        border-right: 15px solid;
+    }
+
+    .margin-top-on-small {
+        margin-top: 10px;
+    }
+
+    .remove-margin-right-on-mid-and-up {
+        margin-right: 0;
+    }
 }

@@ -50,6 +50,7 @@ function reactToAjaxSuccess(data) {
 function reactToAjaxError(data, status, request, response) {
     if (status == 422) {//أخطاء التخقق من الحقول
         myAlert('[ ' + status + ' ] ' + firstJsonError(data), 'error');
+        content.ajax_errors = data;
     } else if (status == 403) {// عدم وجود صلاحية ان عدم وجود Token
         myAlert('[ ' + status + ' ] ' + firstJsonError(data), 'error');
     } else if (status == 0) {
@@ -77,45 +78,29 @@ function myAlert(msg, type, duration) {
     Materialize.toast(msg, duration, typeColorArray[msgType])
 }
 
-//function makeAjaxRequest($requestType, $url, $requestData) {
-//    //console.info(JSON.stringify($data, null, "  "));
-//    this.$http.post($url, $requestData,
-//        function (data) {
-//            myAlert(data);
-//        })
-//        .error(function (data, status) {
-//            if (status == 422) {
-//                myAlert(firstJsonError(data), 'error');
-//            } else {
-//                myAlert('عفوا.. حدث خطأ', 'error')
-//            }
-//        })
-//}
-
 Vue.http.headers.common['X-CSRF-TOKEN'] = document.querySelector('#token').getAttribute('value');
 Vue.http.options.root = '';
 Vue.config.debug = true;
 Vue.config.strict = false;
 var $vue_data = {
     show_no_result_found_msg: false,
-    //allJson: {
     students: [],
+    daily_memorize: [],
+    daily_behavior: [],
     halakah: [],
+    halakah_id: 20,
     teacher: [],
     school: [],
     memorize_types: [],
     behavior_types: [],
     selected_student_behaviors: [],
-    //selectedBehavior: [],
     new_daily_behavior: {},
     old_daily_behavior: {},
     //student_total_behaviors: 0,
     selected_day_daily: true,
     selected_date: null,
     previous_date: null,
-    //},
     current_memorize_type_id: null,
-    //CurrentStudentID: null,
     current_daily_id: null,
     new_daily_memorize: {},
     old_daily_memorize: {},
@@ -149,9 +134,8 @@ var $vue_data = {
     check_all: false,
     quran: quran,
     quran_char_count: quran_char_count,
-    //ajaxMsg: null,
-    //showAjaxMsg: false
     random_phrases: random_phrases,
+    ajax_errors: {},
     msg_ok: false,
     msg_title: null,
     msg_body: null

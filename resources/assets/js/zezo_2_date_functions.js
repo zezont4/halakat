@@ -113,5 +113,5 @@ function date_to_no(formattedDate) {
         return;
     }
     var re = new RegExp("/", 'g');
-    return formattedDate.replace(re, '');
+    return parseInt(formattedDate.replace(re, ''));
 }

@@ -9,4 +9,7 @@ class Quran extends Model
     protected $table = '0_quran';
     public $timestamps = false;
     protected $guarded = ['number'];
+    protected $casts = [
+        'number' => 'integer'
+    ];
 }

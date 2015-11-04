@@ -10,7 +10,12 @@ class Daily extends Model
     protected $table = 'st_daily';
 //    public $timestamps = false;
     protected $guarded = ['id'];
-
+    protected $casts = [
+        'id'                => 'integer',
+        'st_id'             => 'integer',
+        'h_date'            => 'integer',
+        'attendance_status' => 'integer',
+    ];
 
     public function students()
     {

@@ -18,12 +18,13 @@ elixir(function (mix) {
             "Material_Icons.css",
             "droidarabicnaskh.css",
             "ge_ss_two_light.css",
-            "zezo_date.css"
+            "zezo_date.css",
+            "style.css"
         ], 'public/css/main.css'
     );
 
     mix.scripts([
-            "jquery-1.11.3.min.js",
+            "jquery-2.1.4.min.js",
             "materialize.min.js",
             "zezo_1_get_selected_year.js",
             "zezo_2_date_functions.js",

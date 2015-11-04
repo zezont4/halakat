@@ -16,7 +16,7 @@ Route::post('daily/prepareForHalakah', ['as' => 'daily.prepareForHalakah', 'uses
 Route::post('daily_memorize/store/', ['as' => 'daily_memorize.store', 'uses' => 'DailyMemorizeController@store']);
 Route::put('daily_memorize/update/', ['as' => 'daily_memorize.update', 'uses' => 'DailyMemorizeController@update']);
 Route::DELETE('daily_memorize/destroy/{memorize_id}', ['as' => 'daily_memorize.destroy', 'uses' => 'DailyMemorizeController@destroy']);
-Route::get('daily_memorize/getMemorizeData/{h_date}/{memorizeTypeID}/{studentID}', ['as' => 'daily_memorize.getMemorizeData', 'uses' => 'DailyMemorizeController@getMemorizeData']);
+Route::get('daily_memorize/getMemorizeData/{h_date}/{memorize_type_id}/{student_id}', ['as' => 'daily_memorize.getMemorizeData', 'uses' => 'DailyMemorizeController@getMemorizeData']);
 
 //daily_behavior
 Route::post('daily_behavior/store/', ['as' => 'daily_behavior.store', 'uses' => 'DailyBehaviorController@store']);

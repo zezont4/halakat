@@ -23,7 +23,7 @@ class DailyBehaviorRequest extends Request
     {
         return [
             'daily_id'    => 'required|numeric',
-            'behavior_id' => 'required|numeric',
+            'behavior_type_id' => 'required|numeric',
             'points'      => 'required|numeric',
         ];
     }

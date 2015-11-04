@@ -12,22 +12,23 @@
                 <h5 class="col s5 m2 left-align horizontal-label">نوع السلوك</h5>
 
                 <h5 class="col s7 m10">
-                    <input v-model="new_daily_behavior.behavior_type" v-on:click="new_daily_behavior.behavior_id=''" number
-                           name="behavior_type" type="radio" id="behavior1" value="1"/>
+                    <input v-model="new_daily_behavior.is_positive" number @click="new_daily_behavior.behavior_type_id=''"
+                           name="is_positive" type="radio" id="behavior1" value="1"/>
                     <label for="behavior1">إيجابي</label>
 
-                    <input v-model="new_daily_behavior.behavior_type" v-on:click="new_daily_behavior.behavior_id=''" number
-                           name="behavior_type" type="radio" id="behavior2" value="0"/>
+                    <input v-model="new_daily_behavior.is_positive" number @click="new_daily_behavior.behavior_type_id=''"
+                           name="is_positive" type="radio" id="behavior2" value="0"/>
                     <label for="behavior2">سلبي</label>
                 </h5>
             </div>
 
             <div class="row mini-margin-bottom">
-                <label class="col s5 m2 left-align horizontal-label" for="behavior_id">السلوك</label>
-                <select class="col s7 m10 browser-default" v-model="new_daily_behavior.behavior_id" number
-                        v-on:change="new_daily_behavior.points = findBehavior(new_daily_behavior.behavior_id).points" name='behavior_id' id='behavior_id'>
+                <label class="col s5 m2 left-align horizontal-label" for="behavior_type_id">السلوك</label>
+                <select class="col s7 m10 browser-default" v-model="new_daily_behavior.behavior_type_id" number
+                        @change="new_daily_behavior.points = findBehaviorType(new_daily_behavior.behavior_type_id).points"
+                        name='behavior_type_id' id='behavior_type_id'>
                     <option value="" disabled selected>اختر السلوك</option>
-                    <option v-for="behavior in behavior_types | filterBy new_daily_behavior.behavior_type in 'behavior_type'"
+                    <option v-for="behavior in behavior_types | filterBy new_daily_behavior.is_positive in 'is_positive'"
                             value="@{{ behavior.id }}">@{{behavior.name}}</option>
                 </select>
             </div>
@@ -48,7 +49,7 @@
 
         <div class="divider"></div>
         <div class="modal-footer">
-            <a href="#" v-on:click="storeBehavior()" class="btn-flat green-text lighten-2 waves-effect">حفظ</a>
+            <a href="#" @click="storeBehavior()" class="btn-flat green-text lighten-2 waves-effect">حفظ</a>
 
   {{--          <a v-if="new_daily_behavior.id" v-on:click="destroyBehavior()"
                class='btn-flat red-text text-lighten-2 waves-effect waves-red' href="#">حذف</a>--}}

@@ -39,11 +39,23 @@ var content = new Vue({
     },
 
     computed: {
+        mark_class:function(){
+            return this.mark(this.new_daily_memorize.points,this.new_daily_memorize.memorize_type_id).mark_class;
+        },
+
+        mark_label:function(){
+            return this.mark(this.new_daily_memorize.points,this.new_daily_memorize.memorize_type_id).mark_label;
+        },
+
+        total_behavior_points_for_student :function(){
+            return this.studentBehaviorsPoints(this.selected_student_info.st_no, 1) - this.studentBehaviorsPoints(this.selected_student_info.st_no, 0);
+        },
+
         summaries: function () {
             var data = [];
             this.students.forEach(function (student, i) {
-                //var student_daily = this.findDailyByDate(student, this.selected_date);
-                var student_daily = _.findWhere(student.daily,{h_date:date_to_no(this.selected_date)})||{};
+                var student_daily = _.findWhere(this.daily,{st_id:student.st_no,h_date:date_to_no(this.selected_date)})||{};
+
                 var dailyId, dailyHDate, attendance_status,
                     goodBehaviorsPoints, badBehaviorsPoints, totalBehaviors,
                     memorize1Points, memorize2Points, memorize3Points, totalMemorize,
@@ -57,8 +69,8 @@ var content = new Vue({
                     attendance_status = student_daily.attendance_status;
 
                     //Behaviors
-                    goodBehaviorsPoints = parseFloat(this.studentBehaviorsPoints(student, 1)) || 0;
-                    badBehaviorsPoints = parseFloat(this.studentBehaviorsPoints(student, 0)) || 0;
+                    goodBehaviorsPoints = parseFloat(this.studentBehaviorsPoints(student.st_no, 1)) || 0;
+                    badBehaviorsPoints = parseFloat(this.studentBehaviorsPoints(student.st_no, 0)) || 0;
 
                     totalBehaviors = parseFloat(goodBehaviorsPoints) - parseFloat(badBehaviorsPoints);
 
@@ -71,6 +83,9 @@ var content = new Vue({
 
                     totalMemorize = parseFloat(memorize1Points) + parseFloat(memorize2Points) + parseFloat(memorize3Points);
 
+                    //memorize1Class = this.mark(memorize1Points, 1).mark_class;
+                    //memorize2Class = this.mark(memorize2Points, 2).mark_class;
+                    //memorize3Class = this.mark(memorize3Points, 3).mark_class;
                     memorize1Class = this.studentMemorizeData(student, 1).my_class;
                     memorize2Class = this.studentMemorizeData(student, 2).my_class;
                     memorize3Class = this.studentMemorizeData(student, 3).my_class;

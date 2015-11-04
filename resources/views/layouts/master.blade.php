@@ -10,7 +10,7 @@
     <title>{{ $pageTitle }}</title>
     <link rel="stylesheet" href="{{asset('css/main.css')}}">
 {{--    <link rel="stylesheet" href="{{asset('css/materialize-rtl.css')}}">--}}
-    <link rel="stylesheet" href="{{asset('css/style.css')}}">
+{{--    <link rel="stylesheet" href="{{asset('css/style.css')}}">--}}
 
     {{--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">--}}
 

@@ -4,8 +4,10 @@ use App\Http\Requests;
 use App\Http\Requests\DailyRequest;
 use App\Models\BehaviorTypes;
 use App\Models\Daily;
+use App\Models\DailyBehavior;
 use App\Models\DailyMemorize;
 use App\Models\Halakah;
+use App\Models\HalakahTypes;
 use App\Models\MemorizeType;
 use App\Models\MinimumMemorize;
 use App\Models\School;
@@ -27,64 +29,73 @@ class DailyController extends Controller
 
     public function allJson($h_date, $StHalaqah)
     {
-        $studentsInDaily = Daily::where('halakah_id', $StHalaqah)->where('h_date', $h_date)->lists('st_id');
+        // last hijri date
+        $last_h_day = Daily::where('halakah_id', $StHalaqah)->where('h_date', '<', $h_date)->orderBy('h_date', 'desc')->first();
+        $last_h_day = $last_h_day ? $last_h_day->h_date : null;
 
-        $students = Student::whereIn('st_no', $studentsInDaily->toArray())
+        // daily ids of today in last day
+        $last_day_daily_ids = Daily::where('halakah_id', $StHalaqah)->where('h_date', $last_h_day)->lists('id');
+        $today_daily_ids = Daily::where('halakah_id', $StHalaqah)->where('h_date', $h_date)->lists('id');
+
+        // students ids of today
+        $today_daily_st_ids = Daily::where('halakah_id', $StHalaqah)->where('h_date', $h_date)->lists('st_id');
+
+        // daily date of today and last day
+        $daily = Daily::where('halakah_id', $StHalaqah)->where('h_date', $h_date)->orWhere('h_date', $last_h_day)->get(['id', 'st_id', 'h_date', 'attendance_status']);
+
+        // daily_memorize data of today and last day
+        $daily_memorize = DailyMemorize::whereIn('daily_id', $today_daily_ids)->orWhereIn('daily_id', $last_day_daily_ids)->get();
+
+        // daily_behavior data of today and last day
+        $daily_behavior = DailyBehavior::whereIn('daily_id', $today_daily_ids)->get();
+
+        // students data
+        $students = Student::whereIn('st_no', $today_daily_st_ids)
             ->select(['st_no', 'StBurthDate', 'FatherMobileNo', DB::raw('st_no,
          concat_ws(" ",StName1,StName2,StName4) as stFullName3,
           concat_ws(" ",StName1,StName2,StName3,StName4) as stFullName4')])->get();
 
-        $daily_memorize = DailyMemorize::get();
-        /*$query->where(function ($query) use ($h_date) {
-            $query->where('h_date', $h_date)
-                ->orWhere(function ($query) use ($h_date) {
-                    $query->Where('h_date', '<', $h_date)->Where('attendance_status', 1);
-                });
-        })->take(2);*/
-        foreach ($students as $student) {
-            $dailies = Daily::
-            where('st_id', $student->st_no)->lastTwoDays($h_date)
-                ->with('daily_behavior')
-                ->with('daily_memorize')
-                ->orderby('h_date', 'desc')
-                ->get();
-
-            $student->daily = $dailies->toArray();
-        }
-        /*foreach ($students as $student) {
-            $dailies = Daily::
-            where('st_id', $student->st_no)->lastTwoDays($h_date)
-                ->with('daily_behavior')
-                ->with('daily_memorize')
-                ->orderby('h_date', 'desc')
-                ->get();
-
-            $student->daily = $dailies->toArray();
-        }*/
-        $teacher = Teacher::where('THalaqah', $StHalaqah)->where('hide', 0)->get();
+        //teacher data
+        $teacher = Teacher::where('THalaqah', $StHalaqah)->where('hide', 0)->get(['t_no', 'TName1', 'TName2', 'TName4']);
         If (count($teacher) > 1) {
             return 'المعلم يدرس في أكثر من حلقة. يجب حذف الحلقات الآخرى أو ربطها بمعلم آخر';
         }
         $teacher = $teacher[0];
 
-        $halakah = Halakah::where('AutoNo', $StHalaqah)->first();
+        //halakah data
+        $halakah = Halakah::where('AutoNo', $StHalaqah)->select('AutoNo', 'HName', 'EdarahID', 'halakah_type_id')->first();
 
-        $school = School::where('id', $halakah->EdarahID)->first();
+        //school data
+        $school = School::where('id', $halakah->EdarahID)->select('arabic_name', 'id')->first();
 
-        $selected_day_daily = Daily::where('h_date', $h_date)->whereIn('st_id', $studentsInDaily->toArray())->get();
+        // halakah_types data
+        $halakah_type_data = HalakahTypes::where('id', $halakah->halakah_type_id)->first();
 
+        // $minimum_memorize_data data
+        $minimum_memorize_data = MinimumMemorize::where('halakah_type_id', $halakah->halakah_type_id)->get();
+
+        //check if it's a new day or not
+        $selected_day_daily = Daily::where('h_date', $h_date)->whereIn('st_id', $today_daily_st_ids)->get();
         $selected_day_daily = count($selected_day_daily) ? true : false;
 
 //        $this->aprint($teacher->toArray());
 //        $this->aprint($halakah->toArray());
 //        $this->aprint($school->toArray());
 //        $this->aprint($students->toArray());
+//        $this->aprint($daily->toArray());
+//        $this->aprint($daily_memorize->toArray());
+//        $this->aprint($minimum_memorize_data->toArray());
 
         return (json_encode([
-            "teacher"          => $teacher->toArray(),
-            "halakah"          => $halakah->toArray(),
-            "school"           => $school->toArray(),
-            "students"         => $students->toArray(),
+            "teacher"            => $teacher,
+            "halakah"            => $halakah,
+            "halakah_type"       => $halakah_type_data,
+            "minimum_memorize"   => $minimum_memorize_data,
+            "school"             => $school,
+            "students"           => $students,
+            "daily"              => $daily,
+            "daily_memorize"     => $daily_memorize,
+            "daily_behavior"     => $daily_behavior,
             "selected_day_daily" => $selected_day_daily
         ], JSON_UNESCAPED_UNICODE));
     }
@@ -111,23 +122,19 @@ class DailyController extends Controller
 
     public function prepareForHalakah(DailyRequest $request)
     {
-        $students = Student::where('StHalaqah', $request->StHalaqah)->get();
-
+        $students = Student::where('StHalaqah', $request->StHalaqah)->lists('st_no');
         $teacher = Teacher::where('THalaqah', $request->StHalaqah)->where('hide', 0)->get();
 
-//        return $teacher[0]['StHalaqah'];
         If (count($teacher) > 1) {
             return 'المعلم يدرس في أكثر من حلقة. يجب حذف الحلقات الآخرى أو ربطها بمعلم آخر';
         }
-        $student_ids = array_map(function ($c) {
-            return $c['st_no'];
-        }, $students->toArray());
+
         $daily = null;
-        for ($i = 0; $i < count($student_ids); $i++) {
-            $previousExistence = Daily::where('st_id', $student_ids[$i])->where('h_date', $request->h_date)->first();;
+        foreach ($students as $student) {
+            $previousExistence = Daily::where('st_id', $student)->where('h_date', $request->h_date)->first();
             if (!$previousExistence) {
                 $daily = Daily::create([
-                    'st_id'             => $student_ids[$i],
+                    'st_id'             => $student,
                     'h_date'            => $request->h_date,
                     'edarah_id'         => $teacher[0]->TEdarah,
                     'halakah_id'        => $teacher[0]->THalaqah,
@@ -136,6 +143,7 @@ class DailyController extends Controller
                 ]);
             }
         }
+
         if ($daily) {
             return 'تم تجهيز اليوم بنجاح';
         }

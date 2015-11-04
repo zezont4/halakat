@@ -12,7 +12,7 @@ class DailyBehaviorController extends Controller
     {
         $behavior = false;
         $msg = [];
-        $behavior = DailyBehavior::create($request->except('id','behavior_type'));
+        $behavior = DailyBehavior::create($request->except('id','is_positive'));
         if ($behavior) {
 //            return $behavior;
             $msg = [
@@ -30,7 +30,7 @@ class DailyBehaviorController extends Controller
     public function update(DailyBehaviorRequest $request)
     {
         $behavior = DailyBehavior::whereId($request->id)
-            ->update($request->except('id','behavior_type'));
+            ->update($request->except('id','is_positive'));
 
         if ($behavior) {
             return 'تم تحديث البيانات';

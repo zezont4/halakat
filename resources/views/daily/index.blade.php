@@ -1,37 +1,37 @@
 @extends('layouts.master',['pageTitle' => 'السجل اليومي'])
 @section('content')
-    @include('daily.dailyhelper')
+    {{--@include('daily.dailyhelper')--}}
     <div id="content">
         <div class="card">
             <div class="card-content">
                 <div class="row">
                     <form>
 
-                        <div class="input-field col s3 static">
+                        <div class="input-field col m3 s6">
                             <input id="selected_date" type="text" value="" zezo_date="true" v-model="selected_date">
                             <label for="selected_date">التاريخ</label>
                         </div>
 
-                        <div class="input-field col s3">
+                        <div class="input-field col m3 s6">
                             <select name='search_type' id='search_type'>
                                 <option v-for="search_type in search_types" value="@{{ search_type.value }}">@{{search_type.text}}</option>
                             </select>
                             <label for="search_type">نوع البحث</label>
                         </div>
 
-                        <div v-show="search_type=='mark'" class="input-field col s3">
+                        <div v-show="search_type=='mark'" class="input-field col m3 s6">
                             <select name='mark_type' id='mark_type'>
                                 <option v-for="mark in mark_types" value='@{{ mark.value }}'> @{{mark.text}} </option>
                             </select>
                             <label for="mark_type">التقدير</label>
                         </div>
 
-                        <div v-show="search_type!='mark'" class="input-field col s3">
+                        <div v-show="search_type!='mark'" class="input-field col m3 s6">
                             <input v-model="search" type='text' class='form-control' name='search' id='search' placeholder="بحث">
                             <label for="search">بحث</label>
                         </div>
 
-                        <div class="input-field col s3">
+                        <div class="input-field col s6 m3">
                             <select name='sort_type' id='sort_type'>
                                 <option v-for="sort_type in sort_types" value="@{{ sort_type.value }}">@{{sort_type.text}}</option>
                             </select>
