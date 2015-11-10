@@ -30,8 +30,8 @@ class Halakah extends Model
         return $this->onlyStudents()
             ->where('hide', 0)
             ->select(['StHalaqah', 'st_no', 'StBurthDate', 'STID', 'FatherMobileNo', DB::raw('
-         concat_ws(" ",StName1,StName2,StName4) as stFullName3,
-          concat_ws(" ",StName1,StName2,StName3,StName4) as stFullName4
+         concat_ws(" ",StName1,StName2,StName4) as st_full_name_3,
+          concat_ws(" ",StName1,StName2,StName3,StName4) as st_full_name_4
           ')]);
     }
 

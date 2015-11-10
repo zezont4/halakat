@@ -5,6 +5,7 @@ body {
 
 html {
     font-family: "Droid Arabic Naskh", sans-serif;
+    font-size: 16px;
 }
 
 button:focus {
@@ -52,7 +53,7 @@ th {
 .input-field label {
 
     right: .75rem;
-    font-family: 'GESSTwoLight-Light';
+    font-family: 'GESSTwoLight-Light', sans-serif;
     color: #6B6B6B;
     font-size: 0.9rem;
 }
@@ -61,8 +62,19 @@ th {
     font-size: 0.9rem;
 }
 
-span.number {
+.number {
     font-family: "Droid Arabic Naskh", sans-serif;
+    display: block;
+    line-height: 1rem;
+    direction: ltr;
+}
+
+.number:before {
+    content: "[ ";
+}
+
+.number:after {
+    content: " ]";
 }
 
 .row-right {
@@ -86,6 +98,10 @@ span.number {
     margin-left: -.75rem;
 }
 
+.row .col.remove-padding-left {
+    padding-left: 0;
+}
+
 .margin_l_r_mini {
     margin-left: -10px;
     margin-right: -10px;
@@ -99,10 +115,6 @@ span.number {
     margin-right: -.75rem;
 }
 
-.remove-margin-left {
-    margin-left: -.75rem;
-}
-
 [v-cloak] {
     display: none;
 }
@@ -110,6 +122,11 @@ span.number {
 .padding_l_r_mini {
     margin-left: -6px;
     margin-right: -6px;
+}
+
+a.btn {
+    line-height: 2.5rem;
+    font-family: 'GESSTwoLight-Light', sans-serif;
 }
 
 .btn-block {
@@ -123,22 +140,22 @@ span.number {
 
 .btn1-success {
     color: #27ae60;
-    border-color: #2ecc71 !important;
+    /*border-color: #2ecc71 !important;*/
 }
 
 .btn1-danger {
-    color: #e57373;
-    border-color: #e57373 !important;
+    color: #CE3131;
+    /*border-color: #e57373 !important;*/
 }
 
 .btn1-warning {
     color: #D4860A;
-    border-color: rgb(241, 196, 15) !important;
+    /*border-color: rgb(241, 196, 15) !important;*/
 }
 
 .btn1-info {
     color: #2980b9;
-    border-color: #3498db !important;
+    /*border-color: #3498db !important;*/
 }
 
 .btn1-default {
@@ -146,20 +163,22 @@ span.number {
     color: #bbb;
 }
 
-.btn1 {
-    border: 1px solid;
-    border-right: 20px solid;
+.btn1, a.btn1 {
+    border: none;
+    /*border: 1px solid;*/
+    /*border-right: 20px solid;*/
     background-color: #FFFFFF;
     padding-left: 0;
     padding-right: 0;
-    line-height: 17px;
-    font-family: 'GESSTwoLight-Light';
+    line-height: 1.7rem;
+    font-family: 'GESSTwoLight-Light', sans-serif;
+    height: 45px;
 }
 
 .btn1:hover {
     background-color: #ffffff;
-    border-color: aaa;
-    color: #aaa;
+    /*border-color: aaa;*/
+    /*color: #aaa;*/
 }
 
 .btn .flag {
@@ -204,13 +223,13 @@ span.number {
 }
 
 button, button i {
-    font-family: 'GESSTwoLight-Light';
+    font-family: 'GESSTwoLight-Light', sans-serif;
     font-style: normal;
 }
 
 .horizontal-label {
     font-size: 1.1rem;
-    font-family: 'GESSTwoLight-Light';
+    font-family: 'GESSTwoLight-Light', sans-serif;
     line-height: 2.5rem;
     color: #7D7D7D;
     height: 2.5rem;
@@ -221,12 +240,7 @@ select.browser-default {
 }
 
 .title-font {
-    font-family: 'GESSTwoLight-Light';
-}
-
-a.btn {
-    line-height: 2.5rem;
-    font-family: 'GESSTwoLight-Light';
+    font-family: 'GESSTwoLight-Light', sans-serif;
 }
 
 .mini-margin-bottom {
@@ -285,6 +299,42 @@ nav .brand-logo img.logo {
     padding: 10px 20px;
 }
 
+.valign-wrapper {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+}
+
+.two_lines {
+    width: 100%;
+    /*height: 40px;*/
+}
+
+.two_lines span {
+    width: 100%;
+    display: block;
+}
+
+label {
+    color: #555;
+}
+
+.col.daily_block {
+    padding: 0px 5px;
+}
+
+.col.daily_block:first-child {
+    /*margin-right: -10px;*/
+}
+
+.col.daily_block:last-child {
+    /*margin-left: -10px;*/
+}
+
 @media only screen and (max-width: 992px) {
     .modal {
         width: 90%;
@@ -302,12 +352,15 @@ nav .brand-logo img.logo {
     }
 
     #toast-container .toast {
-        font-size: 18px;
+        font-size: 16px;
         font-family: "Droid Arabic Naskh", sans-serif;
     }
 }
 
 @media screen and (max-width: 600px) {
+    .btn, .btn-large, .btn-flat{
+        padding: 0 1rem;
+    }
     div.padding_l_r_mini .btn {
         margin: 4px 0;
     }
@@ -329,7 +382,7 @@ nav .brand-logo img.logo {
     }
 
     .btn1 {
-        border-right: 15px solid;
+        /*border-right: 15px solid;*/
     }
 
     .margin-top-on-small {
@@ -340,3 +393,4 @@ nav .brand-logo img.logo {
         margin-right: 0;
     }
 }
+

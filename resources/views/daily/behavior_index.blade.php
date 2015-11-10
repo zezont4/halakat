@@ -1,6 +1,6 @@
 <div v-cloak id="modal_behavior_index" class="modal">
     <div class="modal-content">
-        <h5 class="title-font mid-size-font center-align">@{{ selected_student_info.stFullName3 }} [ سلوك ومواظبة ]</h5>
+        <h5 class="title-font mid-size-font center-align">@{{ selected_student_info.st_full_name_3 }} [ سلوك ومواظبة ]</h5>
 
         {{--<div class="divider"></div>--}}
 

@@ -9,13 +9,7 @@
 
     <title>{{ $pageTitle }}</title>
     <link rel="stylesheet" href="{{asset('css/main.css')}}">
-{{--    <link rel="stylesheet" href="{{asset('css/materialize-rtl.css')}}">--}}
-{{--    <link rel="stylesheet" href="{{asset('css/style.css')}}">--}}
-
-    {{--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">--}}
-
-    {{--<script src="{{asset('js/main.js')}}"></script>--}}
-    {{--<script src="http://materializecss.com/js/init.js"></script>--}}
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     @yield('header')
 
@@ -45,13 +39,7 @@
 
 <script src="{{asset('js/main.js')}}"></script>
 @yield('footer')
-<script>
-    $(document).ready(function () {
-//        $('select').material_select();
-//        $('.tooltipped').tooltip({delay: 50});
-//        $('.modal-trigger').leanModal();
-    });
-</script>
+
 </body>
 
 </html>

@@ -6,6 +6,10 @@ body {
     direction: rtl;
 }
 
+.card {
+    overflow: hidden;
+}
+
 [type="radio"] + label:before, [type="radio"] + label:after {
     right: 0;
 }
@@ -19,8 +23,14 @@ body {
     right: 11px;
 }
 
+[type="checkbox"] + label {
+    line-height: 30px;
+}
+
 [type="checkbox"] + label:before {
     right: 0;
+    margin-top: 3px;
+    border: 2px solid #888;
 }
 
 [type=checkbox] + label {
@@ -34,6 +44,10 @@ form p {
 .modal .modal-footer .btn, .modal .modal-footer .btn-large, .modal .modal-footer .btn-flat {
     float: left;
     margin: 6px 0;
+}
+
+.toast {
+    word-break: normal;
 }
 
 .row .col {

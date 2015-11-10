@@ -52,8 +52,8 @@ class DailyController extends Controller
         // students data
         $students = Student::whereIn('st_no', $today_daily_st_ids)
             ->select(['st_no', 'StBurthDate', 'FatherMobileNo', DB::raw('st_no,
-         concat_ws(" ",StName1,StName2,StName4) as stFullName3,
-          concat_ws(" ",StName1,StName2,StName3,StName4) as stFullName4')])->get();
+         concat_ws(" ",StName1,StName2,StName4) as st_full_name_3,
+          concat_ws(" ",StName1,StName2,StName3,StName4) as st_full_name_4')])->get();
 
         //teacher data
         $teacher = Teacher::where('THalaqah', $StHalaqah)->where('hide', 0)->get(['t_no', 'TName1', 'TName2', 'TName4']);
@@ -64,6 +64,9 @@ class DailyController extends Controller
 
         //halakah data
         $halakah = Halakah::where('AutoNo', $StHalaqah)->select('AutoNo', 'HName', 'EdarahID', 'halakah_type_id')->first();
+
+        //Memorize types
+        $memorize_types = MemorizeType::where('is_active', 1)->where('halakah_type_id', $halakah->halakah_type_id)->orderBy('order')->get(['id', 'name', 'max_point', 'a_point', 'b_point', 'c_point', 'not_accepted_errors', 'not_accepted_hesitations']);
 
         //school data
         $school = School::where('id', $halakah->EdarahID)->select('arabic_name', 'id')->first();
@@ -90,6 +93,7 @@ class DailyController extends Controller
             "teacher"            => $teacher,
             "halakah"            => $halakah,
             "halakah_type"       => $halakah_type_data,
+            "memorize_types"     => $memorize_types,
             "minimum_memorize"   => $minimum_memorize_data,
             "school"             => $school,
             "students"           => $students,
@@ -102,14 +106,13 @@ class DailyController extends Controller
 
     public function basic_data()
     {
-        $memorize_types = MemorizeType::where('is_active', 1)->orderBy('order')->get();
+//        $memorize_types = MemorizeType::where('is_active', 1)->where('halakah_type_id', $halakah->halakah_type_id)->orderBy('order')->get(['id', 'name', 'max_point', 'a_point', 'b_point', 'c_point', 'not_accepted_errors', 'not_accepted_hesitations']);
 
         $behavior_types = BehaviorTypes::get();
 
         $minimum_memorize = MinimumMemorize::get();
 
         return (json_encode([
-            "memorize_types"   => $memorize_types,
             "behavior_types"   => $behavior_types,
             "minimum_memorize" => $minimum_memorize
         ], JSON_UNESCAPED_UNICODE));
