@@ -66,7 +66,8 @@ class DailyController extends Controller
         $halakah = Halakah::where('AutoNo', $StHalaqah)->select('AutoNo', 'HName', 'EdarahID', 'halakah_type_id')->first();
 
         //Memorize types
-        $memorize_types = MemorizeType::where('is_active', 1)->where('halakah_type_id', $halakah->halakah_type_id)->orderBy('order')->get(['id', 'name', 'max_point', 'a_point', 'b_point', 'c_point', 'not_accepted_errors', 'not_accepted_hesitations']);
+        $memorize_types = MemorizeType::where('is_active', 1)->where('halakah_type_id', $halakah->halakah_type_id)
+            ->orderBy('order')->get(['id', 'name', 'max_point', 'a_point', 'b_point', 'c_point', 'not_accepted_errors', 'not_accepted_hesitations']);
 
         //school data
         $school = School::where('id', $halakah->EdarahID)->select('arabic_name', 'id')->first();
@@ -110,7 +111,8 @@ class DailyController extends Controller
 
         $behavior_types = BehaviorTypes::get();
 
-        $minimum_memorize = MinimumMemorize::get();
+        $minimum_memorize = MinimumMemorize::orderBy('halakah_type_id')
+            ->orderBy('memorize_type_id')->orderBy('student_age')->get(['halakah_type_id', 'memorize_type_id', 'student_age', 'letters_count']);
 
         return (json_encode([
             "behavior_types"   => $behavior_types,

@@ -74,73 +74,47 @@
 
 
                     {{--#####################################--}}
+                    <template v-for="summary in summaries | orderBy sort_type sort_order | multiFilter">
                     <div class="divider"></div>
+                        <div class="row section remove-margin-bottom">
 
-                    <div v-for="summary in summaries | orderBy sort_type sort_order | multiFilter"
-                         class="row section remove-margin-bottom">
-
-                        <div class="col s12 m12 l4">
-                            <input type="checkbox" name="select-st" id="select-@{{ summary.st_no }}"
-                                   checked="@{{ check_all }}">
-                            <label for="select-@{{ summary.st_no }}">@{{ summary.st_full_name_4 }} </label>
-                        </div>
-
-                        <div class="col s12 m12 l8 remove-padding-left">
-
-                            <div class="col s3 daily_block">
-                                <a v-on:click="openMemorizeModal(1,summary.st_no)"
-                                   class="btn waves-effect btn-flat btn1 btn1-@{{ summary.memorize_1_class  }} btn-block valign-wrapper">
-                                    <p class="two_lines">
-                                        <span>حفظ</span>
-                                        <span v-if="summary.memorize_1_Points > 0 || summary.memorize_1_is_not_memorized"
-                                              class="number">
-                                            @{{ summary.memorize_1_Points }}
-                                        </span>
-                                    </p>
-                                </a>
+                            <div class="col s12 m12 l3">
+                                <input type="checkbox" name="select-st" id="select-@{{ summary.st_no }}"
+                                       checked="@{{ check_all }}">
+                                <label for="select-@{{ summary.st_no }}">@{{ summary.st_full_name_3 }} </label>
                             </div>
 
-                            <div class="col s3 daily_block">
-                                <a v-on:click="openMemorizeModal(2,summary.st_no)"
-                                   class="btn waves-effect btn-flat btn1 btn1-@{{ summary.memorize_2_class }} btn-block valign-wrapper">
-                                    <p class="two_lines">
-                                        <span>تثبيت</span>
-                                        <span v-if="summary.memorize_2_Points > 0 || summary.memorize_1_is_not_memorized"
-                                            class="number">
-                                            @{{ summary.memorize_2_Points }}
-                                        </span>
-                                    </p>
-                                </a>
-                            </div>
+                            <div class="col s12 m12 l9 remove-padding-left">
 
-                            <div class="col s3 daily_block">
-                                <a v-on:click='openMemorizeModal(3,summary.st_no)'
-                                   class='btn waves-effect btn-flat btn1 btn1-@{{ summary.memorize_3_class }} btn-block valign-wrapper'>
-                                    <p class="two_lines">
-                                        <span>مراجعة</span>
-                                        <span v-if='summary.memorize_3_Points > 0 || summary.memorize_1_is_not_memorized'
-                                          class="number">
-                                        @{{ summary.memorize_3_Points }}
-                                        </span>
-                                    </p>
-                                </a>
-                            </div>
+                                <div v-for="memorize_type in memorize_types" class="col daily_block" :style="{width:100/(memorize_types.length+1) + '%'}">
+                                    <a v-on:click="openMemorizeModal(memorize_type.id,summary.st_no)"
+                                       class="btn waves-effect btn-flat btn1 btn1-@{{ summary.memorize[$index].my_class }} btn-block valign-wrapper">
+                                        <p class="two_lines">
+                                            <span>@{{ memorize_type.name }}</span>
+                                            <span v-if="summary.memorize[$index].points > 0 || summary.memorize[$index].is_not_memorized"
+                                                  class="number">
+                                                @{{ summary.memorize[$index].points }}
+                                            </span>
+                                        </p>
+                                    </a>
+                                </div>
 
-                            <div class="col s3 daily_block">
-                                <a v-on:click='openBehaviorIndexModal(summary.st_no)'
-                                   class="btn waves-effect btn-flat white btn-block btn1 btn1-@{{ summary.total_behaviors_class }} valign-wrapper">
-                                    <p class="two_lines">
-                                        <span>سلوك</span>
-                                        <span v-if="summary.good_behaviors_points > 0 || summary.bad_behaviors_points > 0" class="number">@{{ summary.total_behaviors }}</span>
-                                    </p>
-                                </a>
+
+                                <div class="col daily_block" :style="{width:100/(memorize_types.length+1) + '%'}">
+                                    <a v-on:click='openBehaviorIndexModal(summary.st_no)'
+                                       class="btn waves-effect btn-flat white btn-block btn1 btn1-@{{ summary.total_behaviors_class }} valign-wrapper">
+                                        <p class="two_lines">
+                                            <span>سلوك</span>
+                                            <span v-if="summary.good_behaviors_points > 0 || summary.bad_behaviors_points > 0" class="number">@{{ summary.total_behaviors }}</span>
+                                        </p>
+                                    </a>
+                                </div>
+
                             </div>
 
                         </div>
-
-                    </div>
-                    <div class="divider"></div>
-
+                        {{--<div class="divider"></div>--}}
+                    </template>
                 </div>
 
                 <div v-cloak v-if="!selected_day_daily">
@@ -215,8 +189,11 @@
 @endsection
 
 @section('footer')
+
     <script>
         $(document).ready(function () {
+
+            $('.modal-trigger').leanModal();
 
             var today_h_date = rawToFormattedDate(getRawHijriDateFromArray(getHijriDate('now')));
             $('#selected_date').val(today_h_date);

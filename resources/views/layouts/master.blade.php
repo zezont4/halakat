@@ -17,13 +17,11 @@
 <body>
 <nav class="blue-grey lighten-2" role="navigation">
     <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo"><img width="146" height="60" class="logo" src="{{ asset('image/techcloud_white.png') }}"></a>
+
         <ul class="left hide-on-med-and-down">
-            <li><a href="#">Navbar Link</a></li>
+            <li><a href="#">ملخص نقاط الطلاب</a></li>
         </ul>
 
-        <ul id="nav-mobile" class="side-nav">
-            <li><a href="#">Navbar Link</a></li>
-        </ul>
         <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
     </div>
 </nav>
@@ -38,6 +36,7 @@
 
 
 <script src="{{asset('js/main.js')}}"></script>
+
 @yield('footer')
 
 </body>

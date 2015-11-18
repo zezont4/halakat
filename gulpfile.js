@@ -1,5 +1,5 @@
 var elixir = require('laravel-elixir');
-
+elixir.config.sourcemaps = false;
 elixir(function (mix) {
    /* mix.sass([
             "materialize.scss"
@@ -57,7 +57,7 @@ elixir(function (mix) {
             "zezo_1_get_selected_year.js",
             "zezo_2_date_functions.js",
             "zezo_3_h_calender.js",
-            "quran.js",
+            "quran_reversed.js",
             "underscore-min.js",
             "vue.js",
             "vue-resource.min.js",
